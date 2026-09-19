@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Ping Backend
         run: |
-          curl -sS https://ecopulse-india.onrender.com/api/dashboard-data/ || echo 'Ping complete'
+          curl -sS https://ecopulse-7w2c.onrender.com/api/dashboard-data/ || echo 'Ping complete'
