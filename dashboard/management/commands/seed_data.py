@@ -176,6 +176,36 @@ class Command(BaseCommand):
                 'base_aqi': 95, 'temp_range': (25, 37), 'humidity_range': (58, 82), 'traffic': 'Moderate', 'weather_condition': 'Clear'
             },
             {
+                'name': 'Mysuru', 'state': 'Karnataka', 'population': 1280000,
+                'latitude': 12.295810, 'longitude': 76.639381, 'is_metro': False,
+                'description': 'Heritage cultural capital at the base of Chamundi Hills with pristine tree-lined boulevards and low atmospheric pollution.',
+                'base_aqi': 48, 'temp_range': (20, 30), 'humidity_range': (50, 75), 'traffic': 'Low', 'weather_condition': 'Clear'
+            },
+            {
+                'name': 'Mangaluru', 'state': 'Karnataka', 'population': 700000,
+                'latitude': 12.914142, 'longitude': 74.855957, 'is_metro': False,
+                'description': 'Coastal port city between the Arabian Sea and the Western Ghats with high maritime breezes and clean air currents.',
+                'base_aqi': 52, 'temp_range': (25, 33), 'humidity_range': (70, 88), 'traffic': 'Moderate', 'weather_condition': 'Clear'
+            },
+            {
+                'name': 'Madurai', 'state': 'Tamil Nadu', 'population': 1750000,
+                'latitude': 9.925201, 'longitude': 78.119774, 'is_metro': False,
+                'description': 'Ancient temple metropolis on the Vaigai River with warm inland climate and moderate commercial traffic.',
+                'base_aqi': 72, 'temp_range': (26, 37), 'humidity_range': (52, 76), 'traffic': 'Moderate', 'weather_condition': 'Clear'
+            },
+            {
+                'name': 'Tiruchirappalli', 'state': 'Tamil Nadu', 'population': 1020000,
+                'latitude': 10.790483, 'longitude': 78.704674, 'is_metro': False,
+                'description': 'Major engineering and educational hub in central Tamil Nadu along the Kaveri delta.',
+                'base_aqi': 68, 'temp_range': (25, 36), 'humidity_range': (55, 78), 'traffic': 'Moderate', 'weather_condition': 'Clear'
+            },
+            {
+                'name': 'Kozhikode', 'state': 'Kerala', 'population': 2030000,
+                'latitude': 11.258753, 'longitude': 75.780411, 'is_metro': False,
+                'description': 'Malabar coastal trading hub with lush coconut palm belts and regular sea breeze dispersion.',
+                'base_aqi': 42, 'temp_range': (24, 32), 'humidity_range': (70, 88), 'traffic': 'Low', 'weather_condition': 'Clear'
+            },
+            {
                 'name': 'Thiruvananthapuram', 'state': 'Kerala', 'population': 1100000,
                 'latitude': 8.524139, 'longitude': 76.936638, 'is_metro': False,
                 'description': 'Southern coastal capital enjoying exceptionally low industrial particulate loads and continuous sea air flushing.',
