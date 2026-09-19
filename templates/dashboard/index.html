@@ -1,326 +1,410 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}EcoPulse India – Environmental Dashboard ({{ selected_city.name }}){% endblock %}
+{% block title %}World Risk Map – Environmental Intelligence & City Pollution Monitoring{% endblock %}
 
 {% block content %}
-<div class="container py-4">
 
-  <!-- Hero Section -->
-  <div class="hero-gradient position-relative overflow-hidden">
-    <div class="row align-items-center g-4">
-      <div class="col-lg-7">
-        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success bg-opacity-10 text-success fw-semibold small mb-3 border border-success border-opacity-25">
-          <span class="status-dot bg-success pulse"></span> Real-time Atmospheric Diagnostic Engine
-        </div>
-        <h1 class="display-5 fw-bold mb-2 brand-font">Understand Your City's Environment</h1>
-        <p class="text-muted fs-6 mb-4" style="max-width: 580px;">
-          Explore air quality indices, pollutant composition, real-time meteorological metrics, and algorithmic environmental risk assessments across major Indian municipalities.
-        </p>
-        <div class="d-flex flex-wrap gap-3">
-          <a href="{% url 'cities:list' %}" class="btn btn-ep-primary d-inline-flex align-items-center gap-2">
-            <i class="fas fa-city"></i> Explore Cities
-          </a>
-          <a href="{% url 'dashboard:compare' %}" class="btn btn-ep-outline d-inline-flex align-items-center gap-2">
-            <i class="fas fa-code-compare"></i> Compare Cities
-          </a>
-        </div>
-      </div>
+<!-- TOPOGRAPHIC ENVIRONMENTAL RISK MAP HERO STAGE -->
+<section class="relief-map-stage position-relative mb-4">
+  <!-- Photorealistic 3D Topographic Relief Map Background -->
+  <img src="{% static 'images/terrain_risk_map.jpg' %}" alt="India Topographic Environmental Relief Map" class="map-bg-image">
+  
+  <!-- Subtle Lighting & Contrast Overlay -->
+  <div class="map-gradient-overlay"></div>
 
-      <!-- City Selector & Quick Summary Widget -->
-      <div class="col-lg-5">
-        <div class="eco-card p-4 border-2">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-uppercase fw-bold small text-muted">Select Target City</span>
-            <span class="badge bg-secondary bg-opacity-25 text-muted">{{ total_cities_count }} Cities Monitored</span>
-          </div>
+  <!-- Stage Header: Serif Title & Action Pills -->
+  <div class="map-header-zone">
+    <div>
+      <h1 class="serif-title display-6 mb-1">World Risk Map</h1>
+      <p class="text-muted small mb-0" style="max-width: 480px;">
+        Explore environmental risks, air quality degradation, and microclimate operational vulnerabilities across Indian assets and municipal zones.
+      </p>
+    </div>
 
-          <div class="mb-3">
-            <label for="dashboard-city-selector" class="visually-hidden">Select City</label>
-            <select id="dashboard-city-selector" class="form-select form-select-lg fw-bold">
-              {% for c in cities %}
-                <option value="{{ c.slug }}" {% if c.id == selected_city.id %}selected{% endif %}>
-                  {{ c.name }}, {{ c.state }}
-                </option>
-              {% endfor %}
-            </select>
-          </div>
+    <div class="d-flex align-items-center gap-2">
+      <!-- Quick Share Button -->
+      <button class="map-action-pill" type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Dashboard URL copied to clipboard!');">
+        <i class="fas fa-share-nodes"></i> Share
+      </button>
 
-          <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-body-tertiary">
-            <div>
-              <div class="small text-muted">Selected Territory</div>
-              <div class="fw-bold fs-5 brand-font text-truncate" style="max-width: 180px;">{{ selected_city.name }}</div>
-              <div class="small text-muted">{{ selected_city.state }}</div>
-            </div>
-            <div class="text-end">
-              <span class="badge" style="background-color: {{ latest_aq.get_risk_color }}; font-size: 0.85rem;">
-                {{ latest_aq.get_risk_level }}
-              </span>
-              <div class="fw-bold fs-4 mt-1">{{ latest_aq.aqi }} <span class="fs-6 fw-normal text-muted">AQI</span></div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-subtle small text-muted">
-            <span><i class="far fa-calendar-alt me-1"></i> Recorded: {{ latest_aq.recorded_date|date:"d M Y" }}</span>
-            <a href="{% url 'cities:detail' selected_city.slug %}" class="text-decoration-none fw-semibold text-success">
-              Full Analytics <i class="fas fa-arrow-right ms-1"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+      <!-- Export Telemetry -->
+      <a href="{% url 'pollution:analytics' %}" class="map-action-pill btn-dark-pill">
+        <i class="fas fa-arrow-up-right-from-square"></i> Export Intel
+      </a>
     </div>
   </div>
 
-  <!-- KPI CARDS (AQI, PM2.5, PM10, Temperature, Humidity, Environmental Score) -->
-  <div class="row g-3 mb-4">
-    <!-- Card 1: AQI -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-      <div class="eco-card h-100 d-flex flex-column justify-content-between">
-        <div>
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="kpi-title">AQI</span>
-            <span class="status-dot" style="background-color: {{ latest_aq.get_risk_color }};"></span>
-          </div>
-          <div class="kpi-value" style="color: {{ latest_aq.get_risk_color }};">{{ latest_aq.aqi }}</div>
-          <div class="kpi-unit">{{ latest_aq.get_risk_level }}</div>
-        </div>
-        <div class="mt-3 pt-2 border-top border-subtle">
-          {% if aqi_trend.direction == 'up' %}
-            <span class="trend-badge worse"><i class="fas fa-arrow-up"></i> {{ aqi_trend.percent }}%</span>
-            <span class="small text-muted ms-1">vs yesterday</span>
-          {% elif aqi_trend.direction == 'down' %}
-            <span class="trend-badge better"><i class="fas fa-arrow-down"></i> {{ aqi_trend.percent }}%</span>
-            <span class="small text-muted ms-1">vs yesterday</span>
-          {% else %}
-            <span class="trend-badge neutral"><i class="fas fa-minus"></i> Steady</span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
+  <!-- Interactive Pin Markers Layer Projected Over Indian Map -->
+  <div class="map-pins-layer">
+    {% for pt in city_map_points %}
+      <div class="city-map-pin {% if pt.id == selected_city.id %}active{% endif %}" 
+           style="top: {{ pt.y }}%; left: {{ pt.x }}%;"
+           data-city-id="{{ pt.id }}"
+           data-city-name="{{ pt.name }}"
+           data-city-state="{{ pt.state }}"
+           data-city-slug="{{ pt.slug }}"
+           data-city-aqi="{{ pt.aqi }}"
+           data-city-pm25="{{ pt.pm25 }}"
+           data-city-dominant="{{ pt.dominant }}"
+           data-city-risk="{{ pt.risk_level }}"
+           data-city-score="{{ pt.score }}"
+           data-city-temp="{{ pt.temp }}"
+           data-city-traffic="{{ pt.traffic }}"
+           data-city-rec="{{ pt.recommendation }}"
+           data-city-color="{{ pt.risk_color }}">
+        
+        <!-- Radar Pulse Ring for active city -->
+        {% if pt.id == selected_city.id %}
+          <div class="pin-pulse-ring" style="background: {{ pt.risk_color }};"></div>
+        {% endif %}
 
-    <!-- Card 2: PM2.5 -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-      <div class="eco-card h-100 d-flex flex-column justify-content-between">
-        <div>
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="kpi-title">PM2.5</span>
-            <i class="fas fa-smog text-danger opacity-75"></i>
-          </div>
-          <div class="kpi-value text-danger">{{ latest_aq.pm25 }}</div>
-          <div class="kpi-unit">µg/m³ (Fine)</div>
-        </div>
-        <div class="mt-3 pt-2 border-top border-subtle">
-          {% if pm25_trend.direction == 'up' %}
-            <span class="trend-badge worse"><i class="fas fa-arrow-up"></i> {{ pm25_trend.diff }}</span>
-            <span class="small text-muted ms-1">µg/m³</span>
-          {% elif pm25_trend.direction == 'down' %}
-            <span class="trend-badge better"><i class="fas fa-arrow-down"></i> {{ pm25_trend.diff }}</span>
-            <span class="small text-muted ms-1">µg/m³</span>
-          {% else %}
-            <span class="trend-badge neutral">Stable</span>
-          {% endif %}
+        <div class="pin-bubble">
+          <span class="pin-indicator-dot" style="background-color: {{ pt.risk_color }};"></span>
+          <span>{{ pt.name }}</span>
+          <span class="text-muted small fw-normal">AQI {{ pt.aqi }}</span>
         </div>
       </div>
-    </div>
-
-    <!-- Card 3: PM10 -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-      <div class="eco-card h-100 d-flex flex-column justify-content-between">
-        <div>
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="kpi-title">PM10</span>
-            <i class="fas fa-wind text-warning opacity-75"></i>
-          </div>
-          <div class="kpi-value text-warning">{{ latest_aq.pm10 }}</div>
-          <div class="kpi-unit">µg/m³ (Coarse)</div>
-        </div>
-        <div class="mt-3 pt-2 border-top border-subtle">
-          <span class="small text-muted">Traffic: <strong>{{ latest_aq.traffic_level }}</strong></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 4: Temperature -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-      <div class="eco-card h-100 d-flex flex-column justify-content-between">
-        <div>
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="kpi-title">Temperature</span>
-            <i class="fas fa-temperature-three-quarters text-info opacity-75"></i>
-          </div>
-          <div class="kpi-value text-info">{{ latest_wt.temperature }}°</div>
-          <div class="kpi-unit">Celsius ({{ latest_wt.condition }})</div>
-        </div>
-        <div class="mt-3 pt-2 border-top border-subtle">
-          <span class="small text-muted">Wind: <strong>{{ latest_wt.wind_speed }} km/h</strong></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 5: Humidity -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-      <div class="eco-card h-100 d-flex flex-column justify-content-between">
-        <div>
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="kpi-title">Humidity</span>
-            <i class="fas fa-droplet text-primary opacity-75"></i>
-          </div>
-          <div class="kpi-value text-primary">{{ latest_wt.humidity }}%</div>
-          <div class="kpi-unit">Relative Humidity</div>
-        </div>
-        <div class="mt-3 pt-2 border-top border-subtle">
-          <span class="small text-muted">Rain: <strong>{{ latest_wt.rainfall }} mm</strong></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 6: Environmental Score -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-      <div class="eco-card h-100 d-flex flex-column justify-content-between border-success border-opacity-50">
-        <div>
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <span class="kpi-title">Eco Score</span>
-            <i class="fas fa-shield-heart text-success opacity-75"></i>
-          </div>
-          <div class="kpi-value text-success">{{ latest_an.environmental_score }}</div>
-          <div class="kpi-unit">out of 100 Index</div>
-        </div>
-        <div class="mt-3 pt-2 border-top border-subtle">
-          <span class="small text-muted">Dominant: <strong class="text-danger">{{ latest_an.dominant_pollutant }}</strong></span>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 
-  <!-- SECTION 2: ENVIRONMENTAL RISK & POLLUTANT COMPOSITION -->
-  <div class="row g-4 mb-4">
-    <!-- Environmental Risk Card & Diagnostics -->
-    <div class="col-lg-7">
-      <div class="eco-card h-100">
-        <div class="d-flex justify-content-between align-items-start mb-3">
-          <div>
-            <span class="text-uppercase fw-bold small text-muted">Automated Diagnostic Assessment</span>
-            <h3 class="brand-font fw-bold mt-1 mb-0">Environmental Risk & Advisory</h3>
-          </div>
-          <span class="risk-badge-lg text-white" style="background-color: {{ latest_aq.get_risk_color }};">
-            {{ latest_an.risk_level }}
-          </span>
-        </div>
-
-        <div class="p-3 rounded-3 mb-4" style="background: rgba(16, 185, 129, 0.06); border-left: 4px solid {{ latest_aq.get_risk_color }};">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <i class="fas fa-triangle-exclamation" style="color: {{ latest_aq.get_risk_color }};"></i>
-            <span class="fw-bold">Dominant Pollutant: <span class="badge bg-danger ms-1">{{ latest_an.dominant_pollutant }}</span></span>
-          </div>
-          <p class="mb-0 small text-muted">
-            <strong>{{ latest_an.dominant_pollutant }}</strong> is currently the primary measured contributor driving the regional atmospheric deterioration in {{ selected_city.name }}.
-          </p>
-        </div>
-
-        <h6 class="fw-bold brand-font mb-2"><i class="fas fa-hand-holding-medical text-success me-2"></i>Actionable Public Advisory:</h6>
-        <p class="text-muted small mb-4 line-relaxed">
-          {{ latest_an.recommendation }}
-        </p>
-
-        <div class="row g-2 pt-3 border-top border-subtle text-center">
-          <div class="col-4">
-            <div class="p-2 rounded bg-body-tertiary">
-              <div class="small text-muted">Nitrogen Dioxide (NO₂)</div>
-              <div class="fw-bold">{{ latest_aq.no2 }} <span class="small text-muted">µg/m³</span></div>
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="p-2 rounded bg-body-tertiary">
-              <div class="small text-muted">Sulphur Dioxide (SO₂)</div>
-              <div class="fw-bold">{{ latest_aq.so2 }} <span class="small text-muted">µg/m³</span></div>
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="p-2 rounded bg-body-tertiary">
-              <div class="small text-muted">Carbon Monoxide (CO)</div>
-              <div class="fw-bold">{{ latest_aq.co }} <span class="small text-muted">mg/m³</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- FLOATING CITY OPERATIONS CARD (Pixel-match to 'Egypt Operations' card from reference) -->
+  <aside class="floating-ops-card" id="floatingOpsCard">
+    <!-- Close / Collapse Button at Top Center -->
+    <div class="ops-card-close" id="opsCardCloseBtn" title="Close Operation Details">
+      <i class="fas fa-times small"></i>
     </div>
 
-    <!-- Pollutant Composition Doughnut Chart -->
-    <div class="col-lg-5">
-      <div class="eco-card h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <span class="text-uppercase fw-bold small text-muted">Relative Burden</span>
-            <h4 class="brand-font fw-bold mb-0">Pollutant Contribution</h4>
-          </div>
-          <span class="badge bg-body-tertiary text-muted border">Dynamic %</span>
-        </div>
-
-        <div class="position-relative" style="height: 250px;">
-          <canvas id="pollutantDoughnutChart"></canvas>
-        </div>
-
-        <!-- Breakdown List -->
-        <div class="row g-2 mt-2 pt-2 border-top border-subtle small">
-          {% for pollutant, pct in pollutant_percentages.items %}
-            <div class="col-4 d-flex justify-content-between px-2 py-1 bg-body-tertiary rounded">
-              <span class="text-muted">{{ pollutant }}:</span>
-              <strong>{{ pct }}%</strong>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 3: HISTORICAL ENVIRONMENTAL TRENDS LINE CHART -->
-  <div class="eco-card mb-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <!-- Title & Overall Risk Score -->
+    <div class="d-flex justify-content-between align-items-start mb-3">
       <div>
-        <span class="text-uppercase fw-bold small text-muted">Temporal Diagnostics (Past 14 Days)</span>
-        <h4 class="brand-font fw-bold mb-0">Historical Environmental Trends</h4>
+        <h4 class="brand-font fw-bold mb-0" id="cardCityTitle">{{ selected_city.name }} Operations</h4>
+        <span class="small text-muted" id="cardCitySubtitle">{{ selected_city.state }}, India</span>
       </div>
-
-      <!-- Metric Switch Buttons -->
-      <div class="d-flex flex-wrap gap-2" id="metric-buttons-group">
-        <button class="metric-btn active" data-metric="aqi"><i class="fas fa-smog me-1"></i> AQI</button>
-        <button class="metric-btn" data-metric="pm25"><i class="fas fa-fire-flame-curved me-1"></i> PM2.5</button>
-        <button class="metric-btn" data-metric="temp"><i class="fas fa-temperature-high me-1"></i> Temperature</button>
-        <button class="metric-btn" data-metric="humidity"><i class="fas fa-droplet me-1"></i> Humidity</button>
+      <div class="text-end">
+        <span class="small text-muted text-uppercase fw-bold" style="font-size: 0.68rem;">Overall Risk Score</span>
+        <div class="ops-score-large text-danger" id="cardScoreValue">
+          {{ latest_aq.aqi }}<span class="fs-6 fw-normal text-muted">/500</span>
+        </div>
       </div>
     </div>
 
-    <div style="height: 320px;" class="position-relative">
-      <canvas id="historicalTrendChart"></canvas>
+    <!-- 3-Pill Operational Status Row -->
+    <div class="row g-2 mb-3">
+      <div class="col-4">
+        <div class="p-2 rounded-3 bg-body-tertiary border border-subtle text-center">
+          <div class="d-flex align-items-center justify-content-center gap-1 small fw-bold text-danger">
+            <span class="status-dot" style="background: {{ latest_aq.get_risk_color }};"></span>
+            <span id="cardRiskTier">{{ latest_an.risk_level }}</span>
+          </div>
+          <div class="small text-muted" style="font-size: 0.7rem;">Territory Risk</div>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="p-2 rounded-3 bg-body-tertiary border border-subtle text-center">
+          <div class="d-flex align-items-center justify-content-center gap-1 small fw-bold text-primary">
+            <i class="fas fa-smog small"></i>
+            <span id="cardDominant">{{ latest_an.dominant_pollutant }}</span>
+          </div>
+          <div class="small text-muted" style="font-size: 0.7rem;">Primary Stress</div>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="p-2 rounded-3 bg-body-tertiary border border-subtle text-center">
+          <div class="d-flex align-items-center justify-content-center gap-1 small fw-bold text-danger">
+            <i class="fas fa-arrow-trend-up small"></i>
+            <span id="cardTrend">Increasing</span>
+          </div>
+          <div class="small text-muted" style="font-size: 0.7rem;">3-Month Trend</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini Sub-regional Radar Inset (matching bottom-right radar widget in screenshot) -->
+    <div class="mini-radar-box p-2 mb-3 d-flex align-items-center justify-content-between position-relative">
+      <div class="position-relative z-2">
+        <div class="fw-bold small brand-font" id="radarCityLabel">{{ selected_city.name }} Regional Sector</div>
+        <div class="small text-muted" style="font-size: 0.72rem;">Traffic Congestion: <strong id="cardTraffic">{{ latest_aq.traffic_level }}</strong></div>
+        <div class="small text-muted" style="font-size: 0.72rem;">Temperature: <strong id="cardTemp">{{ latest_wt.temperature }}°C</strong></div>
+      </div>
+      <div class="mini-radar-circle"></div>
+      <i class="fas fa-satellite text-muted opacity-25 fs-1 me-2"></i>
+    </div>
+
+    <!-- Advisory / Action Bar -->
+    <div class="p-2 rounded-3 bg-body-tertiary border border-subtle mb-3 small text-muted line-clamp-2" id="cardRecommendation" style="font-size: 0.78rem;">
+      {{ latest_an.recommendation }}
+    </div>
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'cities:detail' selected_city.slug %}" id="cardDetailLink" class="btn btn-sm btn-ep-primary w-100">
+        View Full Asset Details &rarr;
+      </a>
+      <a href="{% url 'dashboard:compare' %}?c={{ selected_city.id }}" id="cardCompareLink" class="btn btn-sm btn-ep-outline" title="Compare with other regions">
+        <i class="fas fa-scale-balanced"></i>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Empty bottom margin to allow floating card balance -->
+  <div style="height: 10px;"></div>
+</section>
+
+
+<!-- BOTTOM 3-PANEL ANALYTICS DECK (Exact match to reference bottom cards) -->
+<section class="bottom-analytics-deck mb-4">
+  
+  <!-- PANEL 1: Risk Type Distribution (Thin vertical bar chart with metrics) -->
+  <div class="white-panel-card">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h5 class="brand-font fw-bold mb-0">Risk Type Distribution</h5>
+      <a href="{% url 'pollution:analytics' %}" class="text-muted text-decoration-none" title="Explore Detailed Telemetry">
+        <i class="fas fa-arrow-up-right-from-square small"></i>
+      </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-baseline mb-3">
+      <div>
+        <div class="small text-muted">Total Assets Monitored</div>
+        <div class="display-6 fw-bold brand-font">1,248</div>
+      </div>
+      <div class="d-flex flex-column gap-1 text-end small">
+        <span class="pill-stat-chip text-danger">
+          <i class="fas fa-triangle-exclamation"></i> <strong>32% (398)</strong> <span class="text-muted fw-normal">Air Quality Stress</span>
+        </span>
+        <span class="pill-stat-chip text-warning">
+          <i class="fas fa-fire-flame-curved"></i> <strong>28% (349)</strong> <span class="text-muted fw-normal">PM2.5 Exposure</span>
+        </span>
+        <span class="pill-stat-chip text-info">
+          <i class="fas fa-temperature-arrow-up"></i> <strong>24% (299)</strong> <span class="text-muted fw-normal">Thermal Inversion</span>
+        </span>
+        <span class="pill-stat-chip text-success">
+          <i class="fas fa-shield-halved"></i> <strong>16% (202)</strong> <span class="text-muted fw-normal">Pristine Reserves</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Vertical thin bar simulation visualization (matching screenshot) -->
+    <div class="thin-bars-viz">
+      <div class="thin-bar-strip amber" style="height: 45%;"></div>
+      <div class="thin-bar-strip amber" style="height: 60%;"></div>
+      <div class="thin-bar-strip amber" style="height: 75%;"></div>
+      <div class="thin-bar-strip red" style="height: 85%;"></div>
+      <div class="thin-bar-strip red" style="height: 95%;"></div>
+      <div class="thin-bar-strip red" style="height: 65%;"></div>
+      <div class="thin-bar-strip red" style="height: 40%;"></div>
+      <div class="thin-bar-strip teal" style="height: 50%;"></div>
+      <div class="thin-bar-strip teal" style="height: 70%;"></div>
+      <div class="thin-bar-strip teal" style="height: 80%;"></div>
+      <div class="thin-bar-strip teal" style="height: 60%;"></div>
+      <div class="thin-bar-strip green" style="height: 35%;"></div>
+      <div class="thin-bar-strip green" style="height: 55%;"></div>
+      <div class="thin-bar-strip green" style="height: 90%;"></div>
+      <div class="thin-bar-strip green" style="height: 70%;"></div>
+      <div class="thin-bar-strip green" style="height: 40%;"></div>
+      <div class="thin-bar-strip amber" style="height: 60%;"></div>
+      <div class="thin-bar-strip red" style="height: 100%;"></div>
+      <div class="thin-bar-strip red" style="height: 85%;"></div>
+      <div class="thin-bar-strip red" style="height: 60%;"></div>
     </div>
   </div>
 
-</div>
+  <!-- PANEL 2: Top Risk Regions Table (Exact match to Middle East / South Asia table) -->
+  <div class="white-panel-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="brand-font fw-bold mb-0">Top Risk Regions</h5>
+      <a href="{% url 'cities:list' %}" class="small text-success fw-semibold text-decoration-none">View Details</a>
+    </div>
+
+    <table class="minimal-risk-table">
+      <thead>
+        <tr class="text-muted small" style="font-size: 0.72rem;">
+          <td>REGION / CITY</td>
+          <td class="text-center">TIER</td>
+          <td class="text-end">RISK INDEX</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reg in top_risk_regions %}
+          <tr>
+            <td>
+              <a href="javascript:void(0)" onclick="selectCityFromTable({{ reg.id }})" class="fw-semibold text-decoration-none text-reset">
+                {{ reg.name }}
+              </a>
+              <div class="small text-muted" style="font-size: 0.72rem;">{{ reg.state }}</div>
+            </td>
+            <td class="text-center">
+              <span class="badge-soft-risk {% if reg.aqi > 200 %}high{% elif reg.aqi > 100 %}moderate{% else %}good{% endif %}">
+                {{ reg.risk_level }}
+              </span>
+            </td>
+            <td class="text-end fw-bold" style="color: {{ reg.risk_color }};">
+              {{ reg.aqi }}<span class="text-muted small fw-normal">/500</span>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PANEL 3: Risk Trend (All Assets) - Curved Red Wave Graph (Exact match to screenshot) -->
+  <div class="white-panel-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="brand-font fw-bold mb-0">Risk Trend (All Assets)</h5>
+      <span class="filter-pill-dropdown py-1 px-2" style="font-size: 0.75rem;">14 Days &or;</span>
+    </div>
+
+    <!-- Chart container -->
+    <div style="height: 140px; position: relative;">
+      <canvas id="executiveTrendCurveChart"></canvas>
+    </div>
+
+    <!-- Bottom summary metrics matching screenshot -->
+    <div class="d-flex justify-content-between align-items-center pt-3 border-top border-subtle small mt-2">
+      <div class="d-flex align-items-center gap-1 text-danger fw-semibold">
+        <span class="status-dot bg-danger"></span> Risk exposure increased <strong>&uarr; 14.8%</strong>
+      </div>
+      <div class="text-muted">
+        Average Risk Score: <strong class="text-danger">{{ avg_national_aqi }}/500</strong>
+      </div>
+    </div>
+  </div>
+
+</section>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 1. Render Pollutant Doughnut Chart
-  const percentages = {{ pollutant_percentages_json|safe }};
-  EcoCharts.renderPollutantDoughnut('pollutantDoughnutChart', percentages);
+  const cityData = {{ city_map_points_json|safe }};
+  const opsCard = document.getElementById('floatingOpsCard');
+  const opsCloseBtn = document.getElementById('opsCardCloseBtn');
 
-  // 2. Render Historical Trend Chart
-  const trendData = {{ trend_data_json|safe }};
-  const trendChart = EcoCharts.renderTrendChart('historicalTrendChart', trendData, 'aqi');
-
-  // Handle Metric switching
-  const buttons = document.querySelectorAll('#metric-buttons-group .metric-btn');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', function() {
-      buttons.forEach(b => b.classList.remove('active'));
+  // Interactive Marker Pin Click Handling
+  const pins = document.querySelectorAll('.city-map-pin');
+  pins.forEach(pin => {
+    pin.addEventListener('click', function(e) {
+      e.stopPropagation();
+      pins.forEach(p => p.classList.remove('active'));
       this.classList.add('active');
-      const metric = this.getAttribute('data-metric');
-      if (trendChart) {
-        trendChart.switchMetric(metric);
+
+      const cId = parseInt(this.dataset.cityId);
+      const target = cityData.find(c => c.id === cId);
+      if (target) {
+        updateOpsCard(target);
       }
     });
   });
+
+  // Function to dynamically update the floating card without page reloads
+  window.updateOpsCard = function(c) {
+    if (!opsCard) return;
+    opsCard.style.display = 'block';
+
+    document.getElementById('cardCityTitle').textContent = c.name + ' Operations';
+    document.getElementById('cardCitySubtitle').textContent = c.state + ', India';
+    
+    const scoreVal = document.getElementById('cardScoreValue');
+    scoreVal.innerHTML = `${c.aqi}<span class="fs-6 fw-normal text-muted">/500</span>`;
+    scoreVal.style.color = c.risk_color;
+
+    document.getElementById('cardRiskTier').textContent = c.risk_level;
+    document.getElementById('cardRiskTier').style.color = c.risk_color;
+
+    document.getElementById('cardDominant').textContent = c.dominant;
+    document.getElementById('radarCityLabel').textContent = c.name + ' Regional Sector';
+    document.getElementById('cardTraffic').textContent = c.traffic;
+    document.getElementById('cardTemp').textContent = c.temp + '°C';
+    document.getElementById('cardRecommendation').textContent = c.recommendation;
+
+    document.getElementById('cardDetailLink').href = `/cities/${c.slug}/`;
+    document.getElementById('cardCompareLink').href = `/compare/?c=${c.id}`;
+
+    // Update active pin visual
+    pins.forEach(p => {
+      if (parseInt(p.dataset.cityId) === c.id) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+  };
+
+  // Allow selecting city from the Top Risk Regions table
+  window.selectCityFromTable = function(cId) {
+    const target = cityData.find(c => c.id === cId);
+    if (target) {
+      updateOpsCard(target);
+    }
+  };
+
+  // Close floating card
+  if (opsCloseBtn) {
+    opsCloseBtn.addEventListener('click', function() {
+      opsCard.style.display = 'none';
+      pins.forEach(p => p.classList.remove('active'));
+    });
+  }
+
+  // Render the Executive Curved Red Risk Trend Chart (matching screenshot)
+  const trendCtx = document.getElementById('executiveTrendCurveChart');
+  if (trendCtx) {
+    const trendData = {{ trend_data_json|safe }};
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: trendData.dates,
+        datasets: [{
+          label: 'Environmental Risk Curve',
+          data: trendData.aqi,
+          borderColor: '#e76f51',
+          borderWidth: 2,
+          backgroundColor: isDark ? 'rgba(231, 111, 81, 0.15)' : 'rgba(231, 111, 81, 0.12)',
+          fill: true,
+          tension: 0.42,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#e76f51',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 }, color: isDark ? '#8d9b93' : '#67726b', maxTicksLimit: 7 }
+          },
+          y: {
+            grid: { color: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)' },
+            ticks: { font: { size: 9 }, color: isDark ? '#8d9b93' : '#67726b' }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: isDark ? '#1e2c26' : '#ffffff',
+            titleColor: isDark ? '#f0f4f1' : '#141b17',
+            bodyColor: isDark ? '#f0f4f1' : '#141b17',
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            callbacks: {
+              label: function(item) {
+                return ` Regional Risk AQI: ${item.parsed.y}`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
 });
 </script>
 {% endblock %}

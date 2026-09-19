@@ -89,7 +89,64 @@ def index(request):
         'humidity': trend_humidity,
     }
 
-    # Summary Stats across all cities for tickers
+    # Geospatial map points and regional breakdown matching reference design
+    city_map_points = []
+    top_risk_regions = []
+    risk_tier_counts = {'Critical': 0, 'High': 0, 'Moderate': 0, 'Satisfactory': 0, 'Good': 0}
+
+    # Bounds for India geographic coordinates projection onto the map canvas
+    # min_lat: ~8.0, max_lat: ~36.0, min_lng: ~68.0, max_lng: ~94.0
+    for c in cities:
+        aq = c.latest_air_quality
+        wt = c.latest_weather
+        an = c.latest_analysis
+        
+        aqi_val = aq.aqi if aq else 100
+        risk_lvl = an.risk_level if an else 'Moderate'
+        if aqi_val > 300:
+            risk_tier_counts['Critical'] += 1
+        elif aqi_val > 200:
+            risk_tier_counts['High'] += 1
+        elif aqi_val > 100:
+            risk_tier_counts['Moderate'] += 1
+        elif aqi_val > 50:
+            risk_tier_counts['Satisfactory'] += 1
+        else:
+            risk_tier_counts['Good'] += 1
+
+        # Calculate map percentage offsets (calibrated for the relief map of India & subcontinent)
+        lat = float(c.latitude)
+        lng = float(c.longitude)
+        # Lat range ~8 to 34 -> bottom to top (Y: 92% to 15%)
+        # Lng range ~68 to 90 -> left to right (X: 18% to 85%)
+        y_pct = round(max(10.0, min(88.0, 92.0 - ((lat - 8.0) / (34.5 - 8.0)) * 74.0)), 2)
+        x_pct = round(max(12.0, min(86.0, 18.0 + ((lng - 68.0) / (90.0 - 68.0)) * 66.0)), 2)
+
+        point = {
+            'id': c.id,
+            'name': c.name,
+            'state': c.state,
+            'slug': c.slug,
+            'x': x_pct,
+            'y': y_pct,
+            'aqi': aqi_val,
+            'pm25': aq.pm25 if aq else 35.0,
+            'pm10': aq.pm10 if aq else 65.0,
+            'temp': wt.temperature if wt else 26.0,
+            'condition': wt.condition if wt else 'Clear',
+            'dominant': an.dominant_pollutant if an else 'PM2.5',
+            'risk_level': risk_lvl,
+            'risk_color': aq.get_risk_color() if aq else '#10b981',
+            'score': an.environmental_score if an else 75.0,
+            'traffic': aq.traffic_level if aq else 'Moderate',
+            'recommendation': an.recommendation if an else 'Ambient conditions acceptable.'
+        }
+        city_map_points.append(point)
+        top_risk_regions.append(point)
+
+    # Sort top risk regions by highest AQI
+    top_risk_regions.sort(key=lambda x: x['aqi'], reverse=True)
+
     all_latest_aq = [c.latest_air_quality for c in cities if c.latest_air_quality]
     avg_national_aqi = round(sum(a.aqi for a in all_latest_aq) / len(all_latest_aq)) if all_latest_aq else 0
     severe_cities_count = sum(1 for a in all_latest_aq if a.aqi > 200)
@@ -109,6 +166,10 @@ def index(request):
         'avg_national_aqi': avg_national_aqi,
         'severe_cities_count': severe_cities_count,
         'total_cities_count': cities.count(),
+        'city_map_points': city_map_points,
+        'city_map_points_json': json.dumps(city_map_points),
+        'top_risk_regions': top_risk_regions[:5],
+        'risk_tier_counts': risk_tier_counts,
     }
     return render(request, 'dashboard/index.html', context)
 
