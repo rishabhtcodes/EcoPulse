@@ -10,6 +10,8 @@ urlpatterns = [
     path('pollution/', include('pollution.urls')),
     path('weather/', include('weather.urls')),
     path('accounts/', include('accounts.urls')),
+    # django-allauth (social login: Google, GitHub)
+    path('auth/', include('allauth.urls')),
 ]
 
 if settings.DEBUG:
