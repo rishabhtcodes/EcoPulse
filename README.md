@@ -1,6 +1,22 @@
-# EcoPulse India – Project Walkthrough & Viva Guide
+# 🌍 EcoPulse India – Environmental Intelligence & Risk Map System
 
-**EcoPulse India** is an Environmental Intelligence and City Pollution Monitoring platform built with Python and Django 6.x. It delivers real-time atmospheric diagnostics, dynamic chemical burden calculations, multi-city comparative benchmarking, and predictive public advisories across major Indian cities.
+> **EcoPulse India** is an enterprise-grade Environmental Intelligence and Air Quality Monitoring platform built with Python, Django 6.x, Leaflet, and Chart.js. It delivers real-time atmospheric sensor feeds, high-resolution satellite reconnaissance, chemical burden calculations, multi-city comparative benchmarking, and automated public advisories across major Indian cities.
+
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-blue?logo=python)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-6.0-green?logo=django)](https://djangoproject.com)
+[![Open-Meteo](https://img.shields.io/badge/Live%20API-Open--Meteo-teal)](https://open-meteo.com)
+[![Leaflet](https://img.shields.io/badge/Mapping-Leaflet%20%2B%20Esri-emerald)](https://leafletjs.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## 🌟 Key Highlights & Architecture
+
+- **100% Open-Access & Public**: No authentication is required to explore all dashboards, interactive maps, pollutant breakdowns, city comparisons, and weather matrices. Authentication (classic + Google & GitHub OAuth) is completely optional for personalizing favorite cities and admin management.
+- **Real-Time Live Atmospheric Telemetry**: Integrated directly with **Open-Meteo Air Quality & Weather API** (100% free, unlimited, no API keys required). Real-time hourly AQI (US EPA & European), PM2.5, PM10, NO₂, SO₂, CO, O₃, temperature, humidity, rainfall, and wind speed are fetched and cached on-the-fly.
+- **High-Resolution Satellite Reconnaissance**: Dedicated orbital viewing port on city detail pages powered by **Leaflet** and **Esri World Imagery** with exact GPS coordinates and pulsing radar markers.
+- **Executive Obsidian Glassmorphism**: Tailored for both Light Mode and High-Contrast Dark Mode featuring translucent frosted cards, specular highlights, and glowing telemetry pills.
+- **Interactive Alerts Center**: Real-time notification bell calculating critical, high, and moderate environmental advisories across the national monitoring network with read/unread tracking via `localStorage`.
 
 ---
 
@@ -122,40 +138,43 @@ Visit the application in your browser: [http://127.0.0.1:8000/](http://127.0.0.1
 5. **Multi-City Comparison Engine (`/compare/`)**:
    - Multi-select city picker comparing any selected cities side-by-side with bar charts.
 6. **National Directory & Sorting (`/cities/`)**:
-   - Search by name or state, filter by metropolitan category, sort by AQI or Eco Score.
-7. **City Deep Dive (`/cities/<slug>/`)**:
-   - Full chemical breakdown, microclimate stats, coordinates, and 7-day historical telemetry log.
-8. **Pollution Intelligence (`/pollution/`)**:
-   - National ranking table from most polluted to cleanest with color-coded risk badges.
-9. **Weather Center (`/weather/`)**:
-   - Temperature, humidity, wind, rainfall, barometric pressure, and comfort index ratings.
-10. **Global Autocomplete Search**:
-    - Real-time debounced search bar querying both city names and states.
-11. **Dark & Light Mode**:
-    - Modern glassmorphic theme with glowing environmental accent colors and `localStorage` persistence.
-12. **Authentication & Bookmarking**:
-    - Registration, login, profile view, and AJAX favorite city toggling.
+   - Glassmorphic card grid with search by name or state, filter by metropolitan category, and sort by AQI or Eco Score.
+7. **City Deep Dive & Satellite Reconnaissance (`/cities/<slug>/`)**:
+   - Dedicated high-resolution Leaflet satellite orbital viewport alongside executive telemetry stats, on-the-fly live Open-Meteo sync, and 7-day historical telemetry logs.
+8. **Real-Time Live Telemetry Engine**:
+   - Zero-configuration hourly atmospheric ingestion via Open-Meteo with on-demand refresh triggers and REST API endpoints (`/api/sync-city/<slug>/`).
+9. **Alerts & Notification Center**:
+   - Automated notification dropdown computing critical, high, and moderate hazard thresholds with unread counter badges and localStorage synchronization.
+10. **Pollution Intelligence (`/pollution/`)**:
+    - National ranking table from most polluted to cleanest with color-coded risk badges.
+11. **Weather Center (`/weather/`)**:
+    - Temperature, humidity, wind, rainfall, barometric pressure, and comfort index ratings.
+12. **Dark & Light Mode**:
+    - Modern obsidian glassmorphic theme with glowing environmental accent colors and `localStorage` persistence.
 
 ---
 
 ## 4. Top Viva / Assessment Questions & Answers
 
-**Q1: How does the project determine the "Dominant Pollutant"?**
+**Q1: How does the real-time live data fetching work without paid API keys?**
+> **Answer**: EcoPulse uses Open-Meteo's open-access atmospheric endpoints (`dashboard/services.py`). By querying exact GPS coordinates, it parses real-time hourly US EPA AQI, PM2.5, PM10, CO, NO₂, SO₂, and microclimates on-the-fly and caches them in the Django database.
+
+**Q2: How does the project determine the "Dominant Pollutant"?**
 > **Answer**: In `AirQuality.get_dominant_pollutant()`, each pollutant concentration is normalized against its respective CPCB/NAAQS reference limit (e.g., PM2.5 / 60, PM10 / 100, NO₂ / 80, SO₂ / 80, CO / 2.0). The pollutant with the highest normalized ratio is dynamically identified as the dominant pollutant driving atmospheric deterioration.
 
-**Q2: How is the Environmental Score calculated?**
+**Q3: How is the Environmental Score calculated?**
 > **Answer**: In `AirQuality.calculate_environmental_score()`, a transparent formula starts at base 100 and applies weighted penalties:
 > `Score = 100 - [(AQI / 500) * 65 + min(35, (PM2.5 / 250) * 35)]`
 > Higher AQI and PM2.5 values lower the score toward zero, while clean air approaches 100.
 
-**Q3: How are Django ORM relationships utilized in this project?**
-> **Answer**:
-> - `ForeignKey`: Links `AirQuality` and `Weather` records to a `City` with `on_delete=models.CASCADE` and `related_name`.
-> - `OneToOneField`: Connects `EnvironmentalAnalysis` directly to a specific `AirQuality` record.
-> - `ManyToMany / Junction`: Implemented through `FavoriteCity` linking `User` and `City`.
+**Q4: How does the website support public access while also offering authentication?**
+> **Answer**: All main views are 100% public without login requirements. Authentication (with support for Google and GitHub OAuth) is completely optional, used only for saving favorite cities to a user profile and accessing administrative panels.
 
-**Q4: How does the front-end handle real-time metric switching without full page reloads?**
-> **Answer**: Chart data is serialized as JSON in Django views and injected into the template. The JavaScript module `EcoCharts` updates Chart.js dataset objects dynamically when metric pill buttons (`AQI`, `PM2.5`, `Temp`) are clicked.
+---
 
-**Q5: What security practices are followed?**
-> **Answer**: CSRF protection on all forms via `{% csrf_token %}`, password hashing via Django PBKDF2 authentication, SQL injection prevention via Django ORM parameterized queries, and sanitized user inputs.
+## 5. Live Production Deployment
+
+- **Live URL**: [https://ecopulse-7w2c.onrender.com](https://ecopulse-7w2c.onrender.com)
+- **Continuous Deployment**: Connected to the GitHub repository `main` branch.
+- **Keepalive Automation**: GitHub Actions workflow (`.github/workflows/keepalive.yml`) pings the health endpoint every 10 minutes to prevent container sleep.
+
