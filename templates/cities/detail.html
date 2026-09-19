@@ -3,6 +3,68 @@
 
 {% block title %}{{ city.name }} Environmental Intelligence | EcoPulse India{% endblock %}
 
+{% block extra_css %}
+<!-- Leaflet CSS for Satellite View -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  .satellite-hero-card {
+    position: relative;
+    border-radius: var(--ep-radius);
+    overflow: hidden;
+    min-height: 380px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.4);
+    margin-bottom: 1.5rem;
+  }
+  .satellite-map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  .satellite-overlay-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(9, 14, 12, 0.92) 0%, rgba(9, 14, 12, 0.75) 50%, rgba(9, 14, 12, 0.4) 100%);
+    pointer-events: none;
+  }
+  [data-bs-theme="light"] .satellite-overlay-gradient {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.75) 50%, rgba(255, 255, 255, 0.3) 100%);
+  }
+  .satellite-content-box {
+    position: relative;
+    z-index: 3;
+    padding: 2.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .map-layer-badge {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    z-index: 10;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.7);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    pointer-events: none;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
 
@@ -15,40 +77,52 @@
     </ol>
   </nav>
 
-  <!-- City Hero Overview -->
-  <div class="eco-card mb-4 p-4">
-    <div class="row align-items-center g-4">
-      <div class="col-lg-8">
-        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-          <h1 class="display-6 fw-bold brand-font mb-0">{{ city.name }}, {{ city.state }}</h1>
-          {% if city.is_metro %}
-            <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25">Metropolitan Hub</span>
-          {% endif %}
-          {% if user.is_authenticated %}
-            <button class="btn btn-sm favorite-btn-ajax ms-2 p-1" data-city-id="{{ city.id }}" title="Toggle Favorite">
-              <i class="{% if is_favorited %}fas fa-heart text-danger{% else %}far fa-heart text-muted{% endif %} fs-5"></i>
-            </button>
-          {% endif %}
-        </div>
-        <p class="text-muted mb-3">{{ city.description }}</p>
-        <div class="d-flex flex-wrap gap-4 small text-muted">
-          <span><i class="fas fa-location-dot text-danger me-1"></i> {{ city.latitude }}° N, {{ city.longitude }}° E</span>
-          <span><i class="fas fa-users text-primary me-1"></i> Population: {{ city.population }}</span>
-          <span><i class="fas fa-car text-warning me-1"></i> Traffic: <strong>{{ latest_aq.traffic_level }}</strong></span>
-          <span><i class="far fa-calendar-check text-success me-1"></i> Updated: {{ latest_aq.recorded_date|date:"d M Y" }}</span>
-        </div>
-      </div>
+  <!-- City Hero Overview with Satellite Imagery Backdrop -->
+  <div class="satellite-hero-card">
+    <!-- Live Leaflet Satellite Layer -->
+    <div id="citySatelliteMap" class="satellite-map-container"></div>
+    <div class="satellite-overlay-gradient"></div>
+    <span class="map-layer-badge"><i class="fas fa-satellite me-1"></i> High-Res Satellite Feed</span>
 
-      <div class="col-lg-4 text-lg-end">
-        <div class="d-inline-block text-center p-3 rounded-4 bg-body-tertiary border border-subtle">
-          <div class="small text-uppercase text-muted fw-bold">Overall Air Status</div>
-          <span class="badge fs-6 my-2" style="background-color: {{ latest_aq.get_risk_color }};">
-            {{ latest_aq.get_risk_level }}
-          </span>
-          <div class="display-5 fw-bold brand-font" style="color: {{ latest_aq.get_risk_color }};">
-            {{ latest_aq.aqi }} <span class="fs-6 fw-normal text-muted">AQI</span>
+    <!-- Hero Content Overlay -->
+    <div class="satellite-content-box">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <h1 class="display-6 fw-bold brand-font mb-0 text-white">{{ city.name }}, {{ city.state }}</h1>
+            {% if city.is_metro %}
+              <span class="badge bg-primary bg-opacity-75 text-white border border-primary border-opacity-50">Metropolitan Hub</span>
+            {% endif %}
+            <span class="badge rounded-pill bg-success text-white d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.68rem;">
+              <span class="spinner-grow spinner-grow-sm text-white" style="width: 6px; height: 6px;" role="status"></span>
+              LIVE ORBIT
+            </span>
+            {% if user.is_authenticated %}
+              <button class="btn btn-sm favorite-btn-ajax ms-2 p-1" data-city-id="{{ city.id }}" title="Toggle Favorite">
+                <i class="{% if is_favorited %}fas fa-heart text-danger{% else %}far fa-heart text-white-50{% endif %} fs-5"></i>
+              </button>
+            {% endif %}
           </div>
-          <div class="small text-muted mt-1">Eco Score: <strong class="text-success">{{ latest_an.environmental_score }}/100</strong></div>
+          <p class="text-white-50 mb-3" style="max-width: 680px; line-height: 1.5;">{{ city.description }}</p>
+          <div class="d-flex flex-wrap gap-4 small text-white-50">
+            <span><i class="fas fa-location-dot text-danger me-1"></i> {{ city.latitude }}° N, {{ city.longitude }}° E</span>
+            <span><i class="fas fa-users text-info me-1"></i> Population: {{ city.population }}</span>
+            <span><i class="fas fa-car text-warning me-1"></i> Traffic: <strong class="text-white">{{ latest_aq.traffic_level }}</strong></span>
+            <span><i class="far fa-calendar-check text-success me-1"></i> Updated: {{ latest_aq.recorded_date|date:"d M Y" }}</span>
+          </div>
+        </div>
+
+        <div class="col-lg-4 text-lg-end">
+          <div class="d-inline-block text-center p-3 rounded-4" style="background: rgba(15, 23, 19, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 12px 30px rgba(0,0,0,0.5);">
+            <div class="small text-uppercase text-white-50 fw-bold">Overall Air Status</div>
+            <span class="badge fs-6 my-2" style="background-color: {{ latest_aq.get_risk_color }};">
+              {{ latest_aq.get_risk_level }}
+            </span>
+            <div class="display-5 fw-bold brand-font" style="color: {{ latest_aq.get_risk_color }};">
+              {{ latest_aq.aqi }} <span class="fs-6 fw-normal text-white-50">AQI</span>
+            </div>
+            <div class="small text-white-50 mt-1">Eco Score: <strong class="text-success">{{ latest_an.environmental_score }}/100</strong></div>
+          </div>
         </div>
       </div>
     </div>
@@ -177,8 +251,47 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Leaflet JS CDN -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize High-Resolution Satellite Map
+  const lat = {{ city.latitude }};
+  const lng = {{ city.longitude }};
+  const cityName = "{{ city.name|escapejs }}";
+
+  if (document.getElementById('citySatelliteMap')) {
+    const map = L.map('citySatelliteMap', {
+      zoomControl: false,
+      attributionControl: false,
+      scrollWheelZoom: false,
+      dragging: true
+    }).setView([lat, lng], 12);
+
+    // High-resolution Esri World Imagery (satellite from above)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 18,
+      attribution: 'Esri, Maxar, Earthstar Geographics'
+    }).addTo(map);
+
+    // Glowing Pulse Pin at City Coordinates
+    const pulsingIcon = L.divIcon({
+      className: 'custom-satellite-pin',
+      html: `
+        <div style="position: relative; width: 24px; height: 24px;">
+          <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background: rgba(16, 185, 129, 0.4); animation: radarWave 2s infinite;"></div>
+          <div style="position: absolute; top: 6px; left: 6px; width: 12px; height: 12px; border-radius: 50%; background: #10b981; border: 2px solid #ffffff; box-shadow: 0 0 10px #10b981;"></div>
+        </div>
+      `,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    L.marker([lat, lng], { icon: pulsingIcon }).addTo(map)
+      .bindPopup(`<strong style="font-family: Outfit, sans-serif;">${cityName} Sensing Center</strong><br>Lat: ${lat}, Lng: ${lng}`)
+      .openPopup();
+  }
+
   const chartHistory = {{ chart_history_json|safe }};
   const percentages = {{ percentages_json|safe }};
 
