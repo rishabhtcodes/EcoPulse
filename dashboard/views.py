@@ -121,8 +121,9 @@ def index(request):
         lat = float(c.latitude)
         lng = float(c.longitude)
         
-        y_pct = round(max(8.0, min(82.0, 79.0 - ((lat - 8.0) / (34.5 - 8.0)) * 66.0)), 2)
-        x_pct = round(max(14.0, min(84.0, 18.0 + ((lng - 68.5) / (92.5 - 68.5)) * 62.0)), 2)
+        # Exact calibration: southern tip ~68-70%, north ~15%, west ~22%, east ~76%
+        y_pct = round(max(12.0, min(71.0, 70.0 - ((lat - 8.5) / (34.5 - 8.5)) * 55.0)), 2)
+        x_pct = round(max(18.0, min(80.0, 22.0 + ((lng - 69.0) / (92.5 - 69.0)) * 56.0)), 2)
 
         point = {
             'id': c.id,
@@ -282,8 +283,8 @@ def api_dashboard_data(request):
         an = c.latest_analysis
         lat = float(c.latitude)
         lng = float(c.longitude)
-        y_pct = round(max(8.0, min(82.0, 79.0 - ((lat - 8.0) / (34.5 - 8.0)) * 66.0)), 2)
-        x_pct = round(max(14.0, min(84.0, 18.0 + ((lng - 68.5) / (92.5 - 68.5)) * 62.0)), 2)
+        y_pct = round(max(12.0, min(71.0, 70.0 - ((lat - 8.5) / (34.5 - 8.5)) * 55.0)), 2)
+        x_pct = round(max(18.0, min(80.0, 22.0 + ((lng - 69.0) / (92.5 - 69.0)) * 56.0)), 2)
 
         city_map_points.append({
             'id': c.id,
