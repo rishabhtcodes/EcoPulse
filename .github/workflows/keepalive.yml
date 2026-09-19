@@ -1,0 +1,15 @@
+name: Keep Backend Awake
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render free instance from sleeping
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Backend
+        run: |
+          curl -sS https://ecopulse-india.onrender.com/api/dashboard-data/ || echo 'Ping complete'

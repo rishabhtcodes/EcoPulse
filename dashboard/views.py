@@ -267,3 +267,52 @@ def api_city_search(request):
             'risk_color': aq.get_risk_color() if aq else '#64748b'
         })
     return JsonResponse(results, safe=False)
+
+def api_dashboard_data(request):
+    """Clean REST API returning all cities, risk tiers, and latest telemetry for decoupled frontends"""
+    cities = City.objects.all().order_by('name')
+    city_map_points = []
+    
+    for c in cities:
+        aq = c.latest_air_quality
+        wt = c.latest_weather
+        an = c.latest_analysis
+        lat = float(c.latitude)
+        lng = float(c.longitude)
+        y_pct = round(max(10.0, min(88.0, 92.0 - ((lat - 8.0) / (34.5 - 8.0)) * 74.0)), 2)
+        x_pct = round(max(12.0, min(86.0, 18.0 + ((lng - 68.0) / (90.0 - 68.0)) * 66.0)), 2)
+
+        city_map_points.append({
+            'id': c.id,
+            'name': c.name,
+            'state': c.state,
+            'slug': c.slug,
+            'x': x_pct,
+            'y': y_pct,
+            'aqi': aq.aqi if aq else 100,
+            'pm25': aq.pm25 if aq else 35.0,
+            'pm10': aq.pm10 if aq else 65.0,
+            'no2': aq.no2 if aq else 25.0,
+            'so2': aq.so2 if aq else 15.0,
+            'co': aq.co if aq else 0.8,
+            'temp': wt.temperature if wt else 26.0,
+            'humidity': wt.humidity if wt else 55.0,
+            'condition': wt.condition if wt else 'Clear',
+            'dominant': an.dominant_pollutant if an else 'PM2.5',
+            'risk_level': an.risk_level if an else 'Moderate',
+            'risk_color': aq.get_risk_color() if aq else '#10b981',
+            'score': an.environmental_score if an else 75.0,
+            'traffic': aq.traffic_level if aq else 'Moderate',
+            'recommendation': an.recommendation if an else 'Ambient conditions acceptable.'
+        })
+
+    all_latest_aq = [c.latest_air_quality for c in cities if c.latest_air_quality]
+    avg_national_aqi = round(sum(a.aqi for a in all_latest_aq) / len(all_latest_aq)) if all_latest_aq else 0
+
+    return JsonResponse({
+        'status': 'success',
+        'total_cities': len(city_map_points),
+        'avg_national_aqi': avg_national_aqi,
+        'cities': city_map_points
+    })
+

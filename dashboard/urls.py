@@ -8,4 +8,5 @@ urlpatterns = [
     path('compare/', views.compare_view, name='compare'),
     path('about/', views.about_view, name='about'),
     path('api/search/', views.api_city_search, name='api_search'),
+    path('api/dashboard-data/', views.api_dashboard_data, name='api_dashboard_data'),
 ]
