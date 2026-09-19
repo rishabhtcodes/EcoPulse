@@ -91,4 +91,190 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(err => console.error('Favorite toggle failed', err));
     });
   });
+
+  // ═══════════════════════════════════════════
+  //  NOTIFICATION BELL SYSTEM
+  // ═══════════════════════════════════════════
+  const bellBtn    = document.getElementById('notif-bell-btn');
+  const panel      = document.getElementById('notif-panel');
+  const badge      = document.getElementById('notif-badge');
+  const list       = document.getElementById('notif-list');
+  const countPill  = document.getElementById('notif-count-pill');
+  const markAllBtn = document.getElementById('notif-mark-read-btn');
+  const updatedAt  = document.getElementById('notif-updated-at');
+
+  if (!bellBtn || !panel) return;
+
+  const READ_KEY = 'ep_notif_read_ids';
+
+  function getReadIds() {
+    try { return new Set(JSON.parse(localStorage.getItem(READ_KEY) || '[]')); }
+    catch { return new Set(); }
+  }
+  function saveReadIds(ids) {
+    localStorage.setItem(READ_KEY, JSON.stringify([...ids]));
+  }
+
+  // Severity helpers
+  function getSeverity(aqi) {
+    if (aqi > 300) return 'critical';
+    if (aqi > 200) return 'high';
+    if (aqi > 100) return 'moderate';
+    return 'good';
+  }
+  function getSeverityIcon(sev) {
+    return { critical: 'fa-skull-crossbones', high: 'fa-triangle-exclamation',
+             moderate: 'fa-circle-exclamation', good: 'fa-circle-check' }[sev];
+  }
+  function getSeverityMsg(city, aqi, sev, dominant) {
+    const msgs = {
+      critical: `Hazardous air — AQI ${aqi}. ${dominant} at dangerous levels. Avoid all outdoor activity.`,
+      high:     `Unhealthy air — AQI ${aqi}. ${dominant} elevated. Sensitive groups stay indoors.`,
+      moderate: `Moderate pollution — AQI ${aqi}. ${dominant} slightly elevated. Limit strenuous outdoor activity.`,
+      good:     `Air quality acceptable — AQI ${aqi}. ${dominant} within safe limits.`,
+    };
+    return msgs[sev];
+  }
+
+  let allAlerts = [];
+  let panelOpen = false;
+
+  function buildAlerts(cities) {
+    // Only show Critical + High + notable Moderate alerts (AQI > 100)
+    return cities
+      .filter(c => c.aqi > 100)
+      .sort((a, b) => b.aqi - a.aqi)
+      .slice(0, 12)
+      .map(c => ({
+        id: `city-${c.id}`,
+        name: c.name,
+        state: c.state,
+        slug: c.slug,
+        aqi: c.aqi,
+        dominant: c.dominant || 'PM2.5',
+        severity: getSeverity(c.aqi),
+      }));
+  }
+
+  function renderAlerts(alerts, readIds) {
+    list.innerHTML = '';
+
+    if (alerts.length === 0) {
+      list.innerHTML = `
+        <div class="notif-empty">
+          <i class="fas fa-leaf"></i>
+          All cities are within safe air quality limits
+        </div>`;
+      return;
+    }
+
+    alerts.forEach(a => {
+      const isRead = readIds.has(a.id);
+      const sev = a.severity;
+      const icon = getSeverityIcon(sev);
+      const msg  = getSeverityMsg(a.name, a.aqi, sev, a.dominant);
+
+      const item = document.createElement('a');
+      item.className = `notif-item${isRead ? '' : ' unread'}`;
+      item.href = `/cities/${a.slug}/`;
+      item.dataset.id = a.id;
+      item.innerHTML = `
+        <div class="notif-item-icon ${sev}">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="notif-item-body">
+          <div class="notif-item-city">${a.name}, ${a.state}</div>
+          <div class="notif-item-msg">${msg}</div>
+        </div>
+        <span class="notif-item-aqi ${sev}">AQI ${a.aqi}</span>
+        ${isRead ? '' : '<span class="notif-unread-dot"></span>'}
+      `;
+
+      // Mark as read on click
+      item.addEventListener('click', () => {
+        const ids = getReadIds();
+        ids.add(a.id);
+        saveReadIds(ids);
+      });
+
+      list.appendChild(item);
+    });
+  }
+
+  function updateBadge(alerts, readIds) {
+    const unreadCount = alerts.filter(a => !readIds.has(a.id)).length;
+    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+    badge.classList.toggle('zero', unreadCount === 0);
+    countPill.textContent = `${unreadCount} unread`;
+    countPill.classList.toggle('zero', unreadCount === 0);
+
+    if (unreadCount > 0) {
+      bellBtn.classList.add('has-alerts');
+      // Pop animation
+      badge.classList.add('pop');
+      setTimeout(() => badge.classList.remove('pop'), 400);
+    } else {
+      bellBtn.classList.remove('has-alerts');
+    }
+  }
+
+  function openPanel() {
+    panel.classList.add('open');
+    panelOpen = true;
+    // Mark badge as seen (don't mark as read yet)
+    bellBtn.classList.remove('has-alerts');
+  }
+
+  function closePanel() {
+    panel.classList.remove('open');
+    panelOpen = false;
+  }
+
+  // Toggle on bell click
+  bellBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (panelOpen) closePanel(); else openPanel();
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (panelOpen && !panel.contains(e.target) && !bellBtn.contains(e.target)) {
+      closePanel();
+    }
+  });
+
+  // Mark all read
+  markAllBtn && markAllBtn.addEventListener('click', () => {
+    const ids = getReadIds();
+    allAlerts.forEach(a => ids.add(a.id));
+    saveReadIds(ids);
+    renderAlerts(allAlerts, ids);
+    updateBadge(allAlerts, ids);
+  });
+
+  // Fetch live data from API
+  function loadAlerts() {
+    fetch('/api/dashboard-data/')
+      .then(res => res.json())
+      .then(data => {
+        allAlerts = buildAlerts(data.cities || []);
+        const readIds = getReadIds();
+        renderAlerts(allAlerts, readIds);
+        updateBadge(allAlerts, readIds);
+
+        const now = new Date();
+        if (updatedAt) {
+          updatedAt.textContent = `Updated ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+      })
+      .catch(() => {
+        if (list) {
+          list.innerHTML = '<div class="notif-loading"><i class="fas fa-wifi-slash me-2"></i>Could not fetch alerts</div>';
+        }
+      });
+  }
+
+  // Initial load + refresh every 5 minutes
+  loadAlerts();
+  setInterval(loadAlerts, 5 * 60 * 1000);
 });
