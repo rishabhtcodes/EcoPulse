@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pollution Analytics & AQI Rankings | EcoPulse India{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header & KPI Banners -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-danger bg-opacity-10 text-danger fw-semibold small mb-2 border border-danger border-opacity-25">
+        <i class="fas fa-smog"></i> High-Resolution Pollutant Telemetry
+      </div>
+      <h2 class="brand-font fw-bold mb-1">National Pollution Intelligence</h2>
+      <p class="text-muted small mb-0">Cross-sectional rankings, particulate dispersion ratios, and dominant contaminant breakdowns.</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'dashboard:compare' %}" class="btn btn-sm btn-ep-outline">
+        <i class="fas fa-code-compare me-1"></i> Compare Cities
+      </a>
+    </div>
+  </div>
+
+  <!-- Highlight KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="eco-card p-3 border-danger border-opacity-50">
+        <div class="small text-muted text-uppercase fw-bold">Most Impacted City</div>
+        <div class="d-flex justify-content-between align-items-baseline mt-1">
+          <h3 class="brand-font fw-bold text-danger mb-0">{{ most_polluted.city.name }}</h3>
+          <span class="fs-4 fw-bold text-danger">AQI {{ most_polluted.aqi }}</span>
+        </div>
+        <div class="small text-muted mt-2">Dominant: <strong>{{ most_polluted.dominant }}</strong> | Traffic: {{ most_polluted.traffic }}</div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="eco-card p-3 border-success border-opacity-50">
+        <div class="small text-muted text-uppercase fw-bold">Cleanest Ambient Air</div>
+        <div class="d-flex justify-content-between align-items-baseline mt-1">
+          <h3 class="brand-font fw-bold text-success mb-0">{{ cleanest.city.name }}</h3>
+          <span class="fs-4 fw-bold text-success">AQI {{ cleanest.aqi }}</span>
+        </div>
+        <div class="small text-muted mt-2">Eco Score: <strong>{{ cleanest.score }}/100</strong> ({{ cleanest.risk_level }})</div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="eco-card p-3">
+        <div class="small text-muted text-uppercase fw-bold">National Monitored Average</div>
+        <div class="d-flex justify-content-between align-items-baseline mt-1">
+          <h3 class="brand-font fw-bold mb-0">Index Average</h3>
+          <span class="fs-4 fw-bold text-warning">AQI {{ avg_aqi }}</span>
+        </div>
+        <div class="small text-muted mt-2">Total Monitored Cities: <strong>{{ rankings|length }}</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- City Specific Deep Dive Filter -->
+  <div class="eco-card mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+      <div>
+        <h4 class="brand-font fw-bold mb-0">City Chemical Composition Explorer</h4>
+        <span class="small text-muted">Select an Indian city to visualize 14-day particulate progression</span>
+      </div>
+
+      <form method="GET" action="{% url 'pollution:analytics' %}" class="d-flex align-items-center gap-2">
+        <select name="city" class="form-select form-select-sm" onchange="this.form.submit()">
+          {% for c in cities %}
+            <option value="{{ c.id }}" {% if c.id == selected_city.id %}selected{% endif %}>{{ c.name }}, {{ c.state }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-8">
+        <div style="height: 280px;" class="position-relative">
+          <canvas id="pollutionChemicalChart"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div style="height: 220px;" class="position-relative">
+          <canvas id="pollutionDoughnutChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- National Pollution Rankings Table -->
+  <div class="eco-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="brand-font fw-bold mb-0">Comprehensive National Air Quality Ranking</h4>
+      <span class="small text-muted">Sorted from Most Critical to Cleanest</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Rank</th>
+            <th>City</th>
+            <th>State</th>
+            <th>AQI</th>
+            <th>PM2.5</th>
+            <th>PM10</th>
+            <th>Dominant Pollutant</th>
+            <th>Traffic</th>
+            <th>Eco Score</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in rankings %}
+            <tr>
+              <td><strong>#{{ forloop.counter }}</strong></td>
+              <td>
+                <a href="{% url 'cities:detail' item.city.slug %}" class="fw-bold text-decoration-none text-reset">
+                  {{ item.city.name }}
+                </a>
+              </td>
+              <td class="text-muted small">{{ item.city.state }}</td>
+              <td>
+                <span class="badge" style="background-color: {{ item.risk_color }};">
+                  {{ item.aqi }} ({{ item.risk_level }})
+                </span>
+              </td>
+              <td class="text-danger fw-semibold">{{ item.pm25 }} µg/m³</td>
+              <td class="text-warning fw-semibold">{{ item.pm10 }} µg/m³</td>
+              <td><span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">{{ item.dominant }}</span></td>
+              <td><span class="badge bg-secondary bg-opacity-25 text-muted">{{ item.traffic }}</span></td>
+              <td class="text-success fw-bold">{{ item.score }}/100</td>
+              <td>
+                <a href="{% url 'cities:detail' item.city.slug %}" class="btn btn-sm btn-ep-outline py-1 px-2">
+                  <i class="fas fa-chart-line"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const chartData = {{ chart_data_json|safe }};
+  const percentages = {{ percentages_json|safe }};
+
+  // Render Doughnut
+  EcoCharts.renderPollutantDoughnut('pollutionDoughnutChart', percentages);
+
+  // Render Multi-line pollutant progression
+  const ctx = document.getElementById('pollutionChemicalChart');
+  if (ctx) {
+    const theme = EcoCharts.getChartThemeColors();
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: chartData.dates,
+        datasets: [
+          {
+            label: 'AQI',
+            data: chartData.aqi,
+            borderColor: '#f97316',
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            tension: 0.3
+          },
+          {
+            label: 'PM2.5 (µg/m³)',
+            data: chartData.pm25,
+            borderColor: '#ef4444',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: 'PM10 (µg/m³)',
+            data: chartData.pm10,
+            borderColor: '#eab308',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { color: theme.gridColor }, ticks: { color: theme.textColor } },
+          y: { grid: { color: theme.gridColor }, ticks: { color: theme.textColor } }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { color: theme.textColor }
+          }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In | EcoPulse India{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="eco-card p-4 p-md-5">
+        <div class="text-center mb-4">
+          <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-success bg-opacity-25 text-success p-3 mb-2" style="width: 50px; height: 50px;">
+            <i class="fas fa-lock fs-4"></i>
+          </span>
+          <h3 class="brand-font fw-bold">Sign In to EcoPulse</h3>
+          <p class="text-muted small">Access customized environmental alerts and save favorite cities.</p>
+        </div>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter your username" required autofocus>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-ep-primary">Sign In</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-4 small text-muted">
+          Don't have an account? <a href="{% url 'accounts:register' %}" class="text-success fw-bold text-decoration-none">Create one</a>
+        </div>
+
+        <div class="mt-4 pt-3 border-top border-subtle text-center small text-muted">
+          <strong>Demo Credentials:</strong><br>
+          Admin: <code>admin</code> / <code>admin123</code><br>
+          Student: <code>student</code> / <code>student123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

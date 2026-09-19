@@ -1,0 +1,29 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+
+# SQLite database (can be excluded or kept; for academic projects, keeping a small pre-seeded DB helps instant viva demo, but standard practice is to exclude or seed via command)
+*.sqlite3-journal
+
+# Static collected root
+staticfiles/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env

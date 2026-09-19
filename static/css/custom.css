@@ -1,0 +1,347 @@
+/* ==========================================================================
+   EcoPulse India - Modern Environmental Analytics Design System
+   ========================================================================== */
+
+:root {
+  /* Nature & Eco Curated Color Palette */
+  --ep-primary: #0f766e;        /* Deep Green / Teal */
+  --ep-primary-dark: #115e59;
+  --ep-primary-light: #14b8a6;
+  --ep-secondary: #0d9488;      /* Vibrant Teal */
+  --ep-accent: #10b981;         /* Emerald */
+  --ep-accent-glow: rgba(16, 185, 129, 0.25);
+  
+  /* Status Colors */
+  --ep-good: #10b981;
+  --ep-moderate: #f59e0b;
+  --ep-poor: #f97316;
+  --ep-unhealthy: #ef4444;
+  --ep-severe: #7f1d1d;
+
+  /* Theme Light (Default) */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-nav: rgba(255, 255, 255, 0.88);
+  --border-subtle: #e2e8f0;
+  --border-card: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-highlight: #0f766e;
+  --badge-bg: #f1f5f9;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --chart-grid: rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="dark"] {
+  /* Theme Dark (Glowing Modern Analytics) */
+  --bg-main: #0b1319;
+  --bg-card: #13222d;
+  --bg-card-hover: #1a2f3e;
+  --bg-nav: rgba(15, 26, 36, 0.92);
+  --border-subtle: #1e3345;
+  --border-card: #233b4e;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-highlight: #34d399;
+  --badge-bg: #1e3345;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
+  --chart-grid: rgba(255, 255, 255, 0.08);
+}
+
+/* Base styling */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-font {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Sticky Modern Navbar with Glassmorphism */
+.navbar-ecopulse {
+  background: var(--bg-nav) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: all 0.3s ease;
+  padding: 0.85rem 0;
+  z-index: 1030;
+}
+
+.brand-badge {
+  background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
+  color: #fff;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-link {
+  color: var(--text-muted) !important;
+  font-weight: 500;
+  font-size: 0.94rem;
+  padding: 0.5rem 0.9rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--ep-primary-light) !important;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+/* Glass & Card Design */
+.eco-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+.eco-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: var(--shadow-md);
+}
+
+.card-clickable {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card-clickable:hover {
+  transform: translateY(-3px);
+}
+
+/* Hero Section */
+.hero-gradient {
+  background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 45%),
+              radial-gradient(circle at bottom left, rgba(13, 148, 136, 0.1), transparent 50%);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 2rem;
+}
+
+/* Status Indicator Dots */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-dot.pulse {
+  animation: ecoPulse 2s infinite;
+}
+
+@keyframes ecoPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* KPI Cards */
+.kpi-title {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.kpi-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.1;
+}
+
+.kpi-unit {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.trend-badge {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trend-badge.worse {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.trend-badge.better {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.trend-badge.neutral {
+  background: rgba(100, 116, 139, 0.12);
+  color: var(--text-muted);
+}
+
+/* Environmental Risk Banner */
+.risk-badge-lg {
+  padding: 0.4rem 1.1rem;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+/* Global Quick Search Dropdown */
+.search-container {
+  position: relative;
+}
+
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  margin-top: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 1050;
+  display: none;
+}
+
+.search-item {
+  padding: 0.65rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.search-item:last-child {
+  border-bottom: none;
+}
+
+.search-item:hover {
+  background: var(--bg-card-hover);
+}
+
+/* Modern Form Controls */
+.form-control, .form-select {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--ep-accent);
+  box-shadow: 0 0 0 0.2rem var(--ep-accent-glow);
+}
+
+/* Buttons */
+.btn-ep-primary {
+  background: linear-gradient(135deg, #0f766e 0%, #10b981 100%);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.6rem 1.3rem;
+  transition: all 0.2s ease;
+}
+
+.btn-ep-primary:hover {
+  background: linear-gradient(135deg, #115e59 0%, #059669 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px var(--ep-accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-ep-outline {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-card);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.6rem 1.3rem;
+  transition: all 0.2s ease;
+}
+
+.btn-ep-outline:hover {
+  background: var(--bg-card-hover);
+  color: var(--ep-primary-light);
+  border-color: var(--ep-primary-light);
+}
+
+/* Metric Pill Buttons */
+.metric-btn {
+  background: transparent;
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  border-radius: 8px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.metric-btn.active, .metric-btn:hover {
+  background: var(--ep-primary);
+  border-color: var(--ep-primary);
+  color: #ffffff;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-subtle);
+  padding: 2.5rem 0 1.5rem;
+}
+
+/* Micro-animations */
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

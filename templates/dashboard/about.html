@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}About EcoPulse India – Environmental Methodology{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+
+      <!-- Header Banner -->
+      <div class="hero-gradient p-4 p-md-5 mb-4 text-center">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success bg-opacity-10 text-success fw-semibold small mb-3 border border-success border-opacity-25">
+          <i class="fas fa-graduation-cap"></i> B.Tech Class Academic Project
+        </div>
+        <h1 class="display-5 fw-bold brand-font mb-3">EcoPulse India</h1>
+        <p class="lead text-muted max-w-2xl mx-auto" style="max-width: 650px;">
+          An Environmental Intelligence and Atmospheric Monitoring Platform designed to demystify air pollution indices and deliver granular diagnostics across Indian urban centers.
+        </p>
+      </div>
+
+      <!-- Why Environmental Monitoring Matters -->
+      <div class="eco-card mb-4">
+        <h3 class="brand-font fw-bold mb-3"><i class="fas fa-earth-americas text-success me-2"></i>Why Environmental Monitoring Matters</h3>
+        <p class="text-muted line-relaxed mb-3">
+          Air pollution represents one of the most critical public health challenges across modern India. High concentrations of inhalable particulates (PM2.5 and PM10), combined with thermal inversions, seasonal agricultural stubble burning, and vehicular congestion, severely degrade urban atmospheric conditions.
+        </p>
+        <p class="text-muted line-relaxed mb-0">
+          EcoPulse India bridges the communication gap between raw chemical measurements and actionable citizen intelligence by analyzing not only the overall AQI but also determining the <strong>dominant contributing pollutant</strong> and providing algorithmic public advisories.
+        </p>
+      </div>
+
+      <!-- Monitored Parameters Grid -->
+      <div class="eco-card mb-4">
+        <h3 class="brand-font fw-bold mb-3"><i class="fas fa-list-check text-info me-2"></i>Monitored Parameters & Thresholds</h3>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Parameter</th>
+                <th>Full Name</th>
+                <th>Standard Unit</th>
+                <th>CPCB Benchmark</th>
+                <th>Primary Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong class="text-danger">PM2.5</strong></td>
+                <td>Fine Particulate Matter (≤ 2.5 µm)</td>
+                <td>µg/m³</td>
+                <td>60 µg/m³ (24h)</td>
+                <td>Vehicular exhaust, biomass burning, thermal power</td>
+              </tr>
+              <tr>
+                <td><strong class="text-warning">PM10</strong></td>
+                <td>Coarse Particulate Matter (≤ 10 µm)</td>
+                <td>µg/m³</td>
+                <td>100 µg/m³ (24h)</td>
+                <td>Road dust, construction, industrial emissions</td>
+              </tr>
+              <tr>
+                <td><strong class="text-primary">NO₂</strong></td>
+                <td>Nitrogen Dioxide</td>
+                <td>µg/m³</td>
+                <td>80 µg/m³ (24h)</td>
+                <td>Combustion engines, fossil fuel burning</td>
+              </tr>
+              <tr>
+                <td><strong class="text-info">SO₂</strong></td>
+                <td>Sulphur Dioxide</td>
+                <td>µg/m³</td>
+                <td>80 µg/m³ (24h)</td>
+                <td>Refineries, heavy diesel oil combustion, metal smelting</td>
+              </tr>
+              <tr>
+                <td><strong class="text-secondary">CO</strong></td>
+                <td>Carbon Monoxide</td>
+                <td>mg/m³</td>
+                <td>2 mg/m³ (8h)</td>
+                <td>Incomplete carbonaceous fuel combustion</td>
+              </tr>
+              <tr>
+                <td><strong class="text-success">O₃</strong></td>
+                <td>Ground-level Ozone</td>
+                <td>µg/m³</td>
+                <td>100 µg/m³ (8h)</td>
+                <td>Secondary photochemical smog reaction from NOx & VOCs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- How Environmental Score Works -->
+      <div class="eco-card mb-4">
+        <h3 class="brand-font fw-bold mb-3"><i class="fas fa-calculator text-warning me-2"></i>Scoring Methodology (Eco Score)</h3>
+        <p class="text-muted line-relaxed mb-3">
+          The <strong>Environmental Score</strong> is a transparent normalized metric computed from 0 (Worst/Hazardous) to 100 (Pristine). Unlike traditional indices that simply report numbers, our algorithm weighs relative pollutant penalties against National Ambient Air Quality Standards (NAAQS):
+        </p>
+
+        <div class="p-3 rounded-3 bg-body-tertiary border border-subtle font-monospace small mb-3">
+          Environmental Score = 100 - [(AQI / 500) × 65 + min(35, (PM2.5 / 250) × 35)]
+        </div>
+
+        <p class="text-muted small mb-0">
+          This formulation penalizes acute fine particulate concentrations while maintaining smooth linear responsiveness across moderate and satisfactory air brackets.
+        </p>
+      </div>
+
+      <!-- Technology Architecture -->
+      <div class="eco-card mb-4">
+        <h3 class="brand-font fw-bold mb-3"><i class="fas fa-layer-group text-primary me-2"></i>Technology Architecture</h3>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 bg-body-tertiary h-100">
+              <h5 class="brand-font fw-bold"><i class="fab fa-python text-warning me-2"></i>Backend & Persistence</h5>
+              <ul class="text-muted small ps-3 mb-0">
+                <li><strong>Python 3.14 + Django 6.1</strong> framework</li>
+                <li>Django ORM with ForeignKey and OneToOne relationships</li>
+                <li>Modular decoupled apps: <code>cities</code>, <code>pollution</code>, <code>weather</code>, <code>dashboard</code>, <code>accounts</code></li>
+                <li>Django Authentication & custom management command <code>seed_data</code></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 bg-body-tertiary h-100">
+              <h5 class="brand-font fw-bold"><i class="fab fa-js text-warning me-2"></i>Frontend & Visualization</h5>
+              <ul class="text-muted small ps-3 mb-0">
+                <li>Bootstrap 5 responsive UI & CSS3 custom design tokens</li>
+                <li><strong>Chart.js 4.x</strong> for interactive Doughnut, Line & Bar visualizations</li>
+                <li>Dark and Light mode toggle with localStorage persistence</li>
+                <li>Asynchronous live search autocomplete endpoint</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Disclaimer Card -->
+      <div class="eco-card border-warning border-opacity-50">
+        <div class="d-flex align-items-start gap-3">
+          <i class="fas fa-triangle-exclamation text-warning fs-3 mt-1"></i>
+          <div>
+            <h5 class="brand-font fw-bold mb-1">Academic & Educational Disclaimer</h5>
+            <p class="text-muted small mb-0">
+              The data displayed in this academic project consists of simulated and modeled sample telemetry designed for class evaluation, software engineering assessment, and demonstration of full-stack Django design patterns. It should not be treated as an official government environmental monitoring source.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

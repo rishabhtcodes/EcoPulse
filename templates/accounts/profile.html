@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile & Favorites | EcoPulse India{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="eco-card text-center p-4">
+        <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; font-size: 2rem;">
+          {{ user.username|make_list|first|upper }}
+        </div>
+        <h4 class="brand-font fw-bold mb-1">{{ user.username }}</h4>
+        <p class="text-muted small mb-3">{{ user.email|default:'No email configured' }}</p>
+
+        <div class="text-start p-3 rounded-3 bg-body-tertiary small mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">Account Tier:</span>
+            <strong>{% if user.is_staff %}Staff Administrator{% else %}Standard User{% endif %}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">Member Since:</span>
+            <strong>{{ user.date_joined|date:"M Y" }}</strong>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted">Default City:</span>
+            <strong>{{ profile.default_city.name|default:'Not set' }}</strong>
+          </div>
+        </div>
+
+        <form method="POST" class="text-start">
+          {% csrf_token %}
+          <label class="form-label small fw-bold">Change Default City</label>
+          <div class="input-group input-group-sm">
+            <select name="default_city" class="form-select">
+              {% for c in all_cities %}
+                <option value="{{ c.id }}" {% if profile.default_city and profile.default_city.id == c.id %}selected{% endif %}>
+                  {{ c.name }}, {{ c.state }}
+                </option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-ep-primary">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="eco-card h-100 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h4 class="brand-font fw-bold mb-0">Bookmarked Cities</h4>
+            <span class="small text-muted">Quick monitoring watchlist</span>
+          </div>
+          <a href="{% url 'cities:list' %}" class="btn btn-sm btn-ep-outline">+ Add Cities</a>
+        </div>
+
+        <div class="row g-3">
+          {% for fav in favorites %}
+            <div class="col-md-6">
+              <div class="p-3 rounded-3 bg-body-tertiary border border-subtle d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="brand-font fw-bold mb-0">
+                    <a href="{% url 'cities:detail' fav.city.slug %}" class="text-decoration-none text-reset">
+                      {{ fav.city.name }}
+                    </a>
+                  </h5>
+                  <span class="small text-muted">{{ fav.city.state }}</span>
+                  <div class="mt-1">
+                    <span class="badge" style="background-color: {{ fav.city.latest_air_quality.get_risk_color }}; font-size: 0.75rem;">
+                      AQI {{ fav.city.latest_air_quality.aqi }}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <a href="{% url 'accounts:toggle_favorite' fav.city.id %}" class="btn btn-sm btn-outline-danger" title="Remove from favorites">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-12 py-5 text-center text-muted">
+              <i class="far fa-heart fs-1 mb-2"></i>
+              <p>You have not bookmarked any favorite cities yet.</p>
+              <a href="{% url 'cities:list' %}" class="btn btn-sm btn-ep-primary">Browse Cities Directory</a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ city.name }} Environmental Intelligence | EcoPulse India{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Breadcrumb & Top Bar -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}" class="text-decoration-none">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'cities:list' %}" class="text-decoration-none">Cities</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ city.name }}</li>
+    </ol>
+  </nav>
+
+  <!-- City Hero Overview -->
+  <div class="eco-card mb-4 p-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+          <h1 class="display-6 fw-bold brand-font mb-0">{{ city.name }}, {{ city.state }}</h1>
+          {% if city.is_metro %}
+            <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25">Metropolitan Hub</span>
+          {% endif %}
+          {% if user.is_authenticated %}
+            <button class="btn btn-sm favorite-btn-ajax ms-2 p-1" data-city-id="{{ city.id }}" title="Toggle Favorite">
+              <i class="{% if is_favorited %}fas fa-heart text-danger{% else %}far fa-heart text-muted{% endif %} fs-5"></i>
+            </button>
+          {% endif %}
+        </div>
+        <p class="text-muted mb-3">{{ city.description }}</p>
+        <div class="d-flex flex-wrap gap-4 small text-muted">
+          <span><i class="fas fa-location-dot text-danger me-1"></i> {{ city.latitude }}° N, {{ city.longitude }}° E</span>
+          <span><i class="fas fa-users text-primary me-1"></i> Population: {{ city.population }}</span>
+          <span><i class="fas fa-car text-warning me-1"></i> Traffic: <strong>{{ latest_aq.traffic_level }}</strong></span>
+          <span><i class="far fa-calendar-check text-success me-1"></i> Updated: {{ latest_aq.recorded_date|date:"d M Y" }}</span>
+        </div>
+      </div>
+
+      <div class="col-lg-4 text-lg-end">
+        <div class="d-inline-block text-center p-3 rounded-4 bg-body-tertiary border border-subtle">
+          <div class="small text-uppercase text-muted fw-bold">Overall Air Status</div>
+          <span class="badge fs-6 my-2" style="background-color: {{ latest_aq.get_risk_color }};">
+            {{ latest_aq.get_risk_level }}
+          </span>
+          <div class="display-5 fw-bold brand-font" style="color: {{ latest_aq.get_risk_color }};">
+            {{ latest_aq.aqi }} <span class="fs-6 fw-normal text-muted">AQI</span>
+          </div>
+          <div class="small text-muted mt-1">Eco Score: <strong class="text-success">{{ latest_an.environmental_score }}/100</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Environmental Matrix -->
+  <div class="row g-3 mb-4">
+    <!-- PM2.5 -->
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="eco-card text-center p-3">
+        <div class="small text-muted">PM2.5</div>
+        <div class="fw-bold fs-4 text-danger">{{ latest_aq.pm25 }}</div>
+        <div class="small text-muted">µg/m³</div>
+      </div>
+    </div>
+    <!-- PM10 -->
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="eco-card text-center p-3">
+        <div class="small text-muted">PM10</div>
+        <div class="fw-bold fs-4 text-warning">{{ latest_aq.pm10 }}</div>
+        <div class="small text-muted">µg/m³</div>
+      </div>
+    </div>
+    <!-- NO2 -->
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="eco-card text-center p-3">
+        <div class="small text-muted">NO₂</div>
+        <div class="fw-bold fs-4">{{ latest_aq.no2 }}</div>
+        <div class="small text-muted">µg/m³</div>
+      </div>
+    </div>
+    <!-- SO2 -->
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="eco-card text-center p-3">
+        <div class="small text-muted">SO₂</div>
+        <div class="fw-bold fs-4">{{ latest_aq.so2 }}</div>
+        <div class="small text-muted">µg/m³</div>
+      </div>
+    </div>
+    <!-- CO -->
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="eco-card text-center p-3">
+        <div class="small text-muted">CO</div>
+        <div class="fw-bold fs-4">{{ latest_aq.co }}</div>
+        <div class="small text-muted">mg/m³</div>
+      </div>
+    </div>
+    <!-- O3 -->
+    <div class="col-md-2 col-sm-4 col-6">
+      <div class="eco-card text-center p-3">
+        <div class="small text-muted">Ozone (O₃)</div>
+        <div class="fw-bold fs-4">{{ latest_aq.o3 }}</div>
+        <div class="small text-muted">µg/m³</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Atmospheric & Composition Charts -->
+  <div class="row g-4 mb-4">
+    <!-- Trend Chart -->
+    <div class="col-lg-8">
+      <div class="eco-card h-100">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h4 class="brand-font fw-bold mb-0">14-Day Atmospheric Progression</h4>
+          <div class="d-flex gap-2" id="city-detail-metric-group">
+            <button class="metric-btn active" data-metric="aqi">AQI</button>
+            <button class="metric-btn" data-metric="pm25">PM2.5</button>
+            <button class="metric-btn" data-metric="temp">Temperature</button>
+          </div>
+        </div>
+        <div style="height: 280px;" class="position-relative">
+          <canvas id="cityDetailTrendChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doughnut Composition -->
+    <div class="col-lg-4">
+      <div class="eco-card h-100">
+        <h5 class="brand-font fw-bold mb-2">Pollutant Burden Matrix</h5>
+        <div style="height: 220px;" class="position-relative">
+          <canvas id="cityDetailDoughnutChart"></canvas>
+        </div>
+        <div class="mt-3 p-3 rounded-3 bg-body-tertiary small">
+          <div class="fw-bold text-danger mb-1">
+            <i class="fas fa-circle-exclamation me-1"></i> Highest Impact: {{ latest_an.dominant_pollutant }}
+          </div>
+          <p class="text-muted mb-0 line-relaxed">{{ latest_an.recommendation }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historical Records Table -->
+  <div class="eco-card">
+    <h5 class="brand-font fw-bold mb-3">Recent Historical Telemetry Log</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>AQI</th>
+            <th>PM2.5</th>
+            <th>PM10</th>
+            <th>Traffic</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rec in recent_records %}
+            <tr>
+              <td><i class="far fa-calendar-alt text-muted me-1"></i> {{ rec.recorded_date|date:"d M Y" }}</td>
+              <td><span class="fw-bold" style="color: {{ rec.get_risk_color }};">{{ rec.aqi }}</span></td>
+              <td>{{ rec.pm25 }} µg/m³</td>
+              <td>{{ rec.pm10 }} µg/m³</td>
+              <td><span class="badge bg-secondary bg-opacity-25 text-muted">{{ rec.traffic_level }}</span></td>
+              <td><span class="badge" style="background-color: {{ rec.get_risk_color }};">{{ rec.get_risk_level }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const chartHistory = {{ chart_history_json|safe }};
+  const percentages = {{ percentages_json|safe }};
+
+  // 1. Doughnut
+  EcoCharts.renderPollutantDoughnut('cityDetailDoughnutChart', percentages);
+
+  // 2. Trend Line
+  const detailTrend = EcoCharts.renderTrendChart('cityDetailTrendChart', {
+    dates: chartHistory.labels,
+    aqi: chartHistory.aqi,
+    pm25: chartHistory.pm25,
+    temp: chartHistory.temp,
+    humidity: chartHistory.humidity
+  }, 'aqi');
+
+  const btns = document.querySelectorAll('#city-detail-metric-group .metric-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      btns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const metric = this.getAttribute('data-metric');
+      if (detailTrend) {
+        detailTrend.switchMetric(metric);
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
