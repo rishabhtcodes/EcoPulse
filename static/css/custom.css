@@ -251,7 +251,8 @@ body {
   border-radius: var(--ep-radius);
   border: 1px solid var(--ep-border);
   box-shadow: var(--ep-shadow-card);
-  min-height: 600px;
+  aspect-ratio: 1376 / 768;
+  width: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -268,8 +269,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
+  object-fit: fill;
   pointer-events: none;
   opacity: 0.95;
   transition: opacity 0.3s ease;
