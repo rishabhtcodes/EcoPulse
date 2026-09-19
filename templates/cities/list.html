@@ -6,9 +6,12 @@
 <div class="container py-4">
 
   <!-- Header & Filters -->
-  <div class="eco-card mb-4">
+  <div class="eco-card mb-4" style="background: rgba(255, 255, 255, 0.85);">
     <div class="row align-items-center g-3">
       <div class="col-lg-5">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success bg-opacity-10 text-success fw-semibold small mb-2 border border-success border-opacity-25">
+          <i class="fas fa-tower-broadcast"></i> Live Sensing Directory
+        </div>
         <h2 class="brand-font fw-bold mb-1">Monitored Indian Cities</h2>
         <p class="text-muted small mb-0">Displaying real-time air quality, microclimate, and environmental risk metrics across {{ total_cities }} urban centers.</p>
       </div>
@@ -17,7 +20,10 @@
       <div class="col-lg-7">
         <form method="GET" action="{% url 'cities:list' %}" class="row g-2 align-items-center justify-content-lg-end">
           <div class="col-sm-4">
-            <input type="text" name="q" class="form-control form-control-sm" placeholder="Search city or state..." value="{{ query }}">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-body-tertiary border-end-0"><i class="fas fa-search text-muted small"></i></span>
+              <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search city or state..." value="{{ query }}">
+            </div>
           </div>
           <div class="col-sm-3">
             <select name="state" class="form-select form-select-sm">
@@ -47,8 +53,9 @@
   <div class="row g-4">
     {% for item in city_data_list %}
       <div class="col-lg-4 col-md-6">
-        <div class="eco-card h-100 d-flex flex-column justify-content-between position-relative">
+        <div class="eco-card h-100 d-flex flex-column justify-content-between">
           <div>
+            <!-- Header with City Name and Glass Risk Badge -->
             <div class="d-flex justify-content-between align-items-start mb-2">
               <div>
                 <h4 class="brand-font fw-bold mb-0">
@@ -56,7 +63,9 @@
                     {{ item.city.name }}
                   </a>
                 </h4>
-                <div class="small text-muted">{{ item.city.state }}</div>
+                <div class="small text-muted d-flex align-items-center gap-1">
+                  <i class="fas fa-location-dot" style="font-size: 0.72rem;"></i> {{ item.city.state }}
+                </div>
               </div>
 
               <div class="d-flex align-items-center gap-2">
@@ -65,43 +74,46 @@
                     <i class="{% if item.city.id in user_favorites %}fas fa-heart text-danger{% else %}far fa-heart text-muted{% endif %}"></i>
                   </button>
                 {% endif %}
-                <span class="badge" style="background-color: {{ item.risk_color }};">
+                <span class="glass-risk-pill" style="background: {{ item.risk_color }}18; color: {{ item.risk_color }}; border: 1px solid {{ item.risk_color }}35;">
+                  <span class="status-dot" style="background: {{ item.risk_color }}; width: 6px; height: 6px;"></span>
                   {{ item.risk_level }}
                 </span>
               </div>
             </div>
 
-            <p class="small text-muted mb-3 line-clamp-2" style="min-height: 38px;">
+            <p class="small text-muted mb-3 line-clamp-2" style="min-height: 38px; line-height: 1.45;">
               {{ item.city.description }}
             </p>
 
+            <!-- 3 Glass Metric Pills -->
             <div class="row g-2 text-center mb-3">
               <div class="col-4">
-                <div class="p-2 rounded bg-body-tertiary">
-                  <div class="small text-muted" style="font-size: 0.72rem;">AQI</div>
-                  <div class="fw-bold fs-5" style="color: {{ item.risk_color }};">{{ item.aqi }}</div>
+                <div class="glass-metric-pill">
+                  <div class="small text-muted" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">AQI</div>
+                  <div class="fw-bold fs-5 mt-1" style="color: {{ item.risk_color }};">{{ item.aqi }}</div>
                 </div>
               </div>
               <div class="col-4">
-                <div class="p-2 rounded bg-body-tertiary">
-                  <div class="small text-muted" style="font-size: 0.72rem;">Eco Score</div>
-                  <div class="fw-bold fs-5 text-success">{{ item.score }}</div>
+                <div class="glass-metric-pill">
+                  <div class="small text-muted" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">Eco Score</div>
+                  <div class="fw-bold fs-5 mt-1 text-success">{{ item.score }}</div>
                 </div>
               </div>
               <div class="col-4">
-                <div class="p-2 rounded bg-body-tertiary">
-                  <div class="small text-muted" style="font-size: 0.72rem;">Temp</div>
-                  <div class="fw-bold fs-5 text-info">{{ item.temp }}°C</div>
+                <div class="glass-metric-pill">
+                  <div class="small text-muted" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">Temp</div>
+                  <div class="fw-bold fs-5 mt-1" style="color: #0284c7;">{{ item.temp }}°C</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="pt-2 border-top border-subtle d-flex justify-content-between align-items-center">
-            <span class="small text-muted">
-              <i class="fas fa-users me-1"></i> {{ item.city.population|filesizeformat }} hab.
+          <!-- Bottom Footer -->
+          <div class="pt-3 border-top border-subtle d-flex justify-content-between align-items-center">
+            <span class="small text-muted d-flex align-items-center gap-1" style="font-size: 0.78rem;">
+              <i class="fas fa-users-viewfinder"></i> {{ item.city.population|filesizeformat }} hab.
             </span>
-            <a href="{% url 'cities:detail' item.city.slug %}" class="btn btn-sm btn-ep-outline">
+            <a href="{% url 'cities:detail' item.city.slug %}" class="btn btn-sm btn-ep-outline py-1 px-3" style="font-size: 0.8rem;">
               View Details &rarr;
             </a>
           </div>
