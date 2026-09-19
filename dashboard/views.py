@@ -5,6 +5,7 @@ from django.db.models import Q
 from cities.models import City
 from pollution.models import AirQuality, EnvironmentalAnalysis
 from weather.models import Weather
+from .services import sync_city_realtime_data
 
 def index(request):
     cities = City.objects.all().order_by('name')
@@ -314,5 +315,32 @@ def api_dashboard_data(request):
         'total_cities': len(city_map_points),
         'avg_national_aqi': avg_national_aqi,
         'cities': city_map_points
+    })
+
+
+def api_sync_city(request, slug):
+    city = get_object_or_404(City, slug=slug)
+    aq, wt = sync_city_realtime_data(city)
+    an = city.latest_analysis
+
+    return JsonResponse({
+        'status': 'success',
+        'city': city.name,
+        'slug': city.slug,
+        'aqi': aq.aqi if aq else 0,
+        'risk_level': aq.get_risk_level() if aq else 'Unknown',
+        'risk_color': aq.get_risk_color() if aq else '#10b981',
+        'pm25': aq.pm25 if aq else 0,
+        'pm10': aq.pm10 if aq else 0,
+        'no2': aq.no2 if aq else 0,
+        'so2': aq.so2 if aq else 0,
+        'co': aq.co if aq else 0,
+        'o3': aq.o3 if aq else 0,
+        'temp': wt.temperature if wt else 0,
+        'humidity': wt.humidity if wt else 0,
+        'condition': wt.condition if wt else 'Clear',
+        'traffic': aq.traffic_level if aq else 'Moderate',
+        'dominant': an.dominant_pollutant if an else 'PM2.5',
+        'recommendation': an.recommendation if an else '',
     })
 

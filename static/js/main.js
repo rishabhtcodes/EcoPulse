@@ -277,4 +277,59 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initial load + refresh every 5 minutes
   loadAlerts();
   setInterval(loadAlerts, 5 * 60 * 1000);
+
+  // Live Sync button logic
+  const syncBtn = document.getElementById('btnSyncCity');
+  const syncIcon = document.getElementById('syncIcon');
+  if (syncBtn && syncIcon) {
+    syncBtn.addEventListener('click', function () {
+      const slug = this.getAttribute('data-slug');
+      if (!slug) return;
+
+      syncIcon.classList.add('fa-spin');
+      fetch(`/api/sync-city/${slug}/`)
+        .then(r => r.json())
+        .then(data => {
+          syncIcon.classList.remove('fa-spin');
+          if (data.status === 'success') {
+            // Update UI elements in city card
+            const scoreVal = document.getElementById('cardScoreValue');
+            if (scoreVal) scoreVal.innerHTML = `${data.aqi}<span class="fs-6 fw-normal text-muted">/500</span>`;
+
+            const riskTier = document.getElementById('cardRiskTier');
+            if (riskTier) riskTier.textContent = data.risk_level;
+
+            const dominant = document.getElementById('cardDominant');
+            if (dominant) dominant.textContent = data.dominant;
+
+            const traffic = document.getElementById('cardTraffic');
+            if (traffic) traffic.textContent = data.traffic;
+
+            const temp = document.getElementById('cardTemp');
+            if (temp) temp.textContent = `${data.temp}°C`;
+
+            const rec = document.getElementById('cardRecommendation');
+            if (rec && data.recommendation) rec.textContent = data.recommendation;
+
+            // Flash badge to acknowledge live update
+            const badge = document.getElementById('liveTelemetryBadge');
+            if (badge) {
+              badge.classList.remove('bg-success-subtle', 'text-success', 'border-success-subtle');
+              badge.classList.add('bg-primary-subtle', 'text-primary', 'border-primary-subtle');
+              setTimeout(() => {
+                badge.classList.remove('bg-primary-subtle', 'text-primary', 'border-primary-subtle');
+                badge.classList.add('bg-success-subtle', 'text-success', 'border-success-subtle');
+              }, 1200);
+            }
+
+            // Refresh alert notifications
+            loadAlerts();
+          }
+        })
+        .catch(err => {
+          syncIcon.classList.remove('fa-spin');
+          console.warn('Real-time sync error:', err);
+        });
+    });
+  }
 });

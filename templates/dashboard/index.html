@@ -78,7 +78,16 @@
     <!-- Title & Overall Risk Score -->
     <div class="d-flex justify-content-between align-items-start mb-3">
       <div>
-        <h4 class="brand-font fw-bold mb-0" id="cardCityTitle">{{ selected_city.name }} Operations</h4>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h4 class="brand-font fw-bold mb-0" id="cardCityTitle">{{ selected_city.name }} Operations</h4>
+          <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.68rem;" id="liveTelemetryBadge" title="Real-time live telemetry active">
+            <span class="spinner-grow spinner-grow-sm text-success" style="width: 6px; height: 6px;" role="status"></span>
+            LIVE
+          </span>
+          <button id="btnSyncCity" class="btn btn-sm btn-link text-muted p-0 ms-1" style="font-size: 0.75rem;" title="Sync live sensor data now" data-slug="{{ selected_city.slug }}">
+            <i class="fas fa-rotate" id="syncIcon"></i>
+          </button>
+        </div>
         <span class="small text-muted" id="cardCitySubtitle">{{ selected_city.state }}, India</span>
       </div>
       <div class="text-end">
