@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .models import City
 from accounts.models import FavoriteCity
+from dashboard.services import sync_city_realtime_data
 
 def city_list(request):
     query = request.GET.get('q', '').strip()
@@ -65,6 +66,13 @@ def city_list(request):
 
 def city_detail(request, slug):
     city = get_object_or_404(City, slug=slug)
+
+    # Automatically sync live atmospheric & air telemetry for this city
+    try:
+        sync_city_realtime_data(city)
+    except Exception:
+        pass
+
     latest_aq = city.latest_air_quality
     latest_wt = city.latest_weather
     latest_an = city.latest_analysis
