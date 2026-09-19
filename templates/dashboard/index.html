@@ -38,7 +38,7 @@
   <!-- Interactive Pin Markers Layer Projected Over Indian Map -->
   <div class="map-pins-layer">
     {% for pt in city_map_points %}
-      <div class="city-map-pin {% if not pt.is_metro and pt.id != selected_city.id %}pin-compact{% endif %} {% if pt.id == selected_city.id %}active{% endif %}" 
+      <div class="city-map-pin {% if pt.id == selected_city.id %}active{% endif %}" 
            style="top: {{ pt.y }}%; left: {{ pt.x }}%;"
            data-city-id="{{ pt.id }}"
            data-city-name="{{ pt.name }}"

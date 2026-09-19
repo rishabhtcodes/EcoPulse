@@ -115,13 +115,14 @@ def index(request):
         else:
             risk_tier_counts['Good'] += 1
 
-        # Calculate map percentage offsets (calibrated for the relief map of India & subcontinent)
+        # Calibrated projection formula for the India topographic relief background
+        # Latitude: Kanyakumari (8.1° N) -> y ~78%, Kashmir/Ladakh (34.5° N) -> y ~13%
+        # Longitude: Gujarat coast (69° E) -> x ~20%, Bengal/Assam (92° E) -> x ~78%
         lat = float(c.latitude)
         lng = float(c.longitude)
-        # Lat range ~8 to 34 -> bottom to top (Y: 92% to 15%)
-        # Lng range ~68 to 90 -> left to right (X: 18% to 85%)
-        y_pct = round(max(10.0, min(88.0, 92.0 - ((lat - 8.0) / (34.5 - 8.0)) * 74.0)), 2)
-        x_pct = round(max(12.0, min(86.0, 18.0 + ((lng - 68.0) / (90.0 - 68.0)) * 66.0)), 2)
+        
+        y_pct = round(max(8.0, min(82.0, 79.0 - ((lat - 8.0) / (34.5 - 8.0)) * 66.0)), 2)
+        x_pct = round(max(14.0, min(84.0, 18.0 + ((lng - 68.5) / (92.5 - 68.5)) * 62.0)), 2)
 
         point = {
             'id': c.id,
@@ -281,8 +282,8 @@ def api_dashboard_data(request):
         an = c.latest_analysis
         lat = float(c.latitude)
         lng = float(c.longitude)
-        y_pct = round(max(10.0, min(88.0, 92.0 - ((lat - 8.0) / (34.5 - 8.0)) * 74.0)), 2)
-        x_pct = round(max(12.0, min(86.0, 18.0 + ((lng - 68.0) / (90.0 - 68.0)) * 66.0)), 2)
+        y_pct = round(max(8.0, min(82.0, 79.0 - ((lat - 8.0) / (34.5 - 8.0)) * 66.0)), 2)
+        x_pct = round(max(14.0, min(84.0, 18.0 + ((lng - 68.5) / (92.5 - 68.5)) * 62.0)), 2)
 
         city_map_points.append({
             'id': c.id,

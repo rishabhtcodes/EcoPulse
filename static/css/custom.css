@@ -380,36 +380,36 @@ body {
   border-color: #0c1411;
 }
 
-/* High-priority metros show clean compact pill by default */
+/* Clean, compact pin bubbles with crisp typography */
 .pin-bubble {
   position: absolute;
   left: 50%;
-  bottom: 18px;
+  bottom: 16px;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
-  border-radius: 20px;
-  padding: 0.22rem 0.6rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  border-radius: 16px;
+  padding: 0.18rem 0.52rem;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  font-size: 0.72rem;
+  font-size: 0.69rem;
   font-weight: 700;
   color: #141b17;
   white-space: nowrap;
   pointer-events: auto;
-  opacity: 0.95;
+  opacity: 0.98;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-bs-theme="dark"] .pin-bubble {
-  background: rgba(18, 28, 23, 0.92);
+  background: rgba(16, 26, 21, 0.94);
   color: #f0f4f1;
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
 }
 
 /* Non-metro or compact pins expand cleanly on hover */
