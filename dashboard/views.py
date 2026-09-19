@@ -115,70 +115,52 @@ def index(request):
         else:
             risk_tier_counts['Good'] += 1
 
-        # Exact 3D topographic relief calibration for all 44 Indian cities
-        # Perfectly aligned with mainland boundaries, mountain ranges, coastlines, and plateaus
-        CITY_TERRAIN_COORDS = {
-            'Srinagar': (30.0, 17.5),
-            'Jammu': (29.5, 21.0),
-            'Amritsar': (29.8, 24.8),
-            'Ludhiana': (31.5, 26.5),
-            'Chandigarh': (33.2, 26.5),
-            'Shimla': (34.5, 24.5),
-            'Dehradun': (36.0, 26.0),
+        # 12 KEY MAIN CITIES ONLY for the hero risk map (clean, non-overlapping, geographically accurate)
+        MAIN_HERO_CITIES = {
+            'Srinagar': (29.5, 17.5),
             'Delhi': (34.0, 33.0),
             'Jaipur': (31.5, 38.5),
-            'Jodhpur': (27.5, 40.0),
-            'Ahmedabad': (28.2, 45.0),
-            'Surat': (27.5, 51.5),
-            'Indore': (32.5, 50.0),
-            'Bhopal': (34.8, 49.5),
-            'Kanpur': (39.5, 40.0),
             'Lucknow': (41.0, 38.5),
-            'Varanasi': (45.5, 43.0),
-            'Patna': (49.5, 42.5),
-            'Ranchi': (49.0, 50.5),
+            'Ahmedabad': (28.2, 45.0),
             'Kolkata': (55.5, 54.5),
             'Guwahati': (66.0, 46.0),
-            'Shillong': (66.5, 48.5),
-            'Agartala': (65.0, 54.0),
-            'Aizawl': (69.5, 54.0),
-            'Imphal': (72.0, 49.0),
-            'Bhubaneswar': (49.5, 59.5),
-            'Raipur': (43.5, 56.5),
-            'Nagpur': (37.5, 56.0),
             'Mumbai': (26.5, 57.5),
-            'Pune': (28.5, 60.5),
-            'Panaji': (25.7, 69.5),
             'Hyderabad': (36.0, 65.0),
-            'Vijayawada': (39.5, 68.5),
-            'Visakhapatnam': (44.5, 64.0),
-            'Bengaluru': (31.5, 76.5),
-            'Mangaluru': (25.5, 76.0),
-            'Mysuru': (29.5, 79.5),
-            'Chennai': (36.0, 76.5),
-            'Coimbatore': (28.8, 83.0),
-            'Tiruchirappalli': (33.5, 83.5),
-            'Madurai': (31.0, 86.5),
-            'Kozhikode': (25.8, 81.0),
+            'Bengaluru': (30.5, 76.5),
+            'Chennai': (36.5, 76.0),
             'Kochi': (26.0, 85.0),
-            'Thiruvananthapuram': (26.2, 88.5),
         }
 
-        if c.name in CITY_TERRAIN_COORDS:
-            x_pct, y_pct = CITY_TERRAIN_COORDS[c.name]
-        else:
-            lat = float(c.latitude)
-            lng = float(c.longitude)
-            y_pct = round(max(15.0, min(89.0, 88.5 - ((lat - 8.5) / (34.5 - 8.5)) * 71.0)), 2)
-            x_pct = round(max(24.0, min(73.0, 26.0 + ((lng - 69.0) / (93.0 - 69.0)) * 46.0)), 2)
+        if c.name in MAIN_HERO_CITIES:
+            x_pct, y_pct = MAIN_HERO_CITIES[c.name]
+            point = {
+                'id': c.id,
+                'name': c.name,
+                'state': c.state,
+                'slug': c.slug,
+                'x': x_pct,
+                'y': y_pct,
+                'aqi': aqi_val,
+                'pm25': aq.pm25 if aq else 35.0,
+                'pm10': aq.pm10 if aq else 65.0,
+                'temp': wt.temperature if wt else 26.0,
+                'condition': wt.condition if wt else 'Clear',
+                'dominant': an.dominant_pollutant if an else 'PM2.5',
+                'risk_level': risk_lvl,
+                'risk_color': aq.get_risk_color() if aq else '#10b981',
+                'score': an.environmental_score if an else 75.0,
+                'traffic': aq.traffic_level if aq else 'Moderate',
+                'recommendation': an.recommendation if an else 'Ambient conditions acceptable.',
+                'is_metro': True
+            }
+            city_map_points.append(point)
 
-        point = {
+        # All 44 cities still feed into the analytics tables & risk registers
+        full_city_info = {
             'id': c.id,
             'name': c.name,
             'state': c.state,
             'slug': c.slug,
-            'x': x_pct,
-            'y': y_pct,
             'aqi': aqi_val,
             'pm25': aq.pm25 if aq else 35.0,
             'pm10': aq.pm10 if aq else 65.0,
@@ -192,8 +174,7 @@ def index(request):
             'recommendation': an.recommendation if an else 'Ambient conditions acceptable.',
             'is_metro': c.is_metro
         }
-        city_map_points.append(point)
-        top_risk_regions.append(point)
+        top_risk_regions.append(full_city_info)
 
     # Sort top risk regions by highest AQI
     top_risk_regions.sort(key=lambda x: x['aqi'], reverse=True)
