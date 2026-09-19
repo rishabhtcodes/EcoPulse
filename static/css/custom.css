@@ -157,6 +157,15 @@ body {
   justify-content: space-between;
   margin-bottom: 1.25rem;
   gap: 1rem;
+  /* Fix: ensure dropdowns escape the map stacking context */
+  position: relative;
+  z-index: 1040;
+}
+
+/* Force Bootstrap dropdowns in the filter bar to always appear on top of the map */
+.top-filter-bar .dropdown-menu {
+  z-index: 1060 !important;
+  position: absolute !important;
 }
 
 .filter-search-box {
@@ -249,6 +258,9 @@ body {
   justify-content: space-between;
   padding: 2.5rem;
   margin-bottom: 1.25rem;
+  /* z-index below the filter bar so map never covers dropdowns */
+  z-index: 1;
+  isolation: isolate;
 }
 
 .map-bg-image {
