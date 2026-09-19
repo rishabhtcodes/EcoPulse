@@ -140,7 +140,8 @@ def index(request):
             'risk_color': aq.get_risk_color() if aq else '#10b981',
             'score': an.environmental_score if an else 75.0,
             'traffic': aq.traffic_level if aq else 'Moderate',
-            'recommendation': an.recommendation if an else 'Ambient conditions acceptable.'
+            'recommendation': an.recommendation if an else 'Ambient conditions acceptable.',
+            'is_metro': c.is_metro
         }
         city_map_points.append(point)
         top_risk_regions.append(point)

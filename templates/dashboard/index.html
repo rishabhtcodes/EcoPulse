@@ -38,7 +38,7 @@
   <!-- Interactive Pin Markers Layer Projected Over Indian Map -->
   <div class="map-pins-layer">
     {% for pt in city_map_points %}
-      <div class="city-map-pin {% if pt.id == selected_city.id %}active{% endif %}" 
+      <div class="city-map-pin {% if not pt.is_metro and pt.id != selected_city.id %}pin-compact{% endif %} {% if pt.id == selected_city.id %}active{% endif %}" 
            style="top: {{ pt.y }}%; left: {{ pt.x }}%;"
            data-city-id="{{ pt.id }}"
            data-city-name="{{ pt.name }}"
@@ -59,6 +59,12 @@
           <div class="pin-pulse-ring" style="background: {{ pt.risk_color }};"></div>
         {% endif %}
 
+        <!-- Central Telemetry Beacon Node -->
+        <div class="pin-node" style="background-color: {{ pt.risk_color }};">
+          <div style="width: 4px; height: 4px; border-radius: 50%; background: #ffffff;"></div>
+        </div>
+
+        <!-- Telemetry Pill Bubble -->
         <div class="pin-bubble">
           <span class="pin-indicator-dot" style="background-color: {{ pt.risk_color }};"></span>
           <span>{{ pt.name }}</span>
