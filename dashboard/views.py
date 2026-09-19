@@ -116,19 +116,20 @@ def index(request):
             risk_tier_counts['Good'] += 1
 
         # 12 KEY MAIN CITIES ONLY for the hero risk map (clean, non-overlapping, geographically accurate)
+        # Perfectly matched to the 3D relief features: Mumbai on Maharashtra coast, Kolkata on Bengal delta, Guwahati in Assam valley
         MAIN_HERO_CITIES = {
-            'Srinagar': (29.5, 17.5),
+            'Srinagar': (30.5, 18.0),
             'Delhi': (34.0, 33.0),
-            'Jaipur': (31.5, 38.5),
+            'Jaipur': (31.5, 38.0),
             'Lucknow': (41.0, 38.5),
-            'Ahmedabad': (28.2, 45.0),
-            'Kolkata': (55.5, 54.5),
-            'Guwahati': (66.0, 46.0),
-            'Mumbai': (26.5, 57.5),
-            'Hyderabad': (36.0, 65.0),
-            'Bengaluru': (30.5, 76.5),
-            'Chennai': (36.5, 76.0),
-            'Kochi': (26.0, 85.0),
+            'Ahmedabad': (27.5, 45.5),
+            'Mumbai': (28.0, 60.5),
+            'Hyderabad': (36.5, 67.0),
+            'Kolkata': (58.0, 64.0),
+            'Guwahati': (66.5, 54.5),
+            'Bengaluru': (31.0, 78.0),
+            'Chennai': (36.5, 78.5),
+            'Kochi': (26.5, 85.5),
         }
 
         if c.name in MAIN_HERO_CITIES:
