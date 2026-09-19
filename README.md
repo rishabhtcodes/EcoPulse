@@ -2,11 +2,16 @@
 
 > **EcoPulse India** is an enterprise-grade Environmental Intelligence and Air Quality Monitoring platform built with Python, Django 6.x, Leaflet, and Chart.js. It delivers real-time atmospheric sensor feeds, high-resolution satellite reconnaissance, chemical burden calculations, multi-city comparative benchmarking, and automated public advisories across major Indian cities.
 
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Production%20Site-ecopulse--7w2c.onrender.com-success?style=for-the-badge&logo=render)](https://ecopulse-7w2c.onrender.com)
+[![Status](https://img.shields.io/badge/System%20Status-Active%20%26%20Online-10b981?style=for-the-badge)](https://ecopulse-7w2c.onrender.com)
+
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-blue?logo=python)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-6.0-green?logo=django)](https://djangoproject.com)
 [![Open-Meteo](https://img.shields.io/badge/Live%20API-Open--Meteo-teal)](https://open-meteo.com)
 [![Leaflet](https://img.shields.io/badge/Mapping-Leaflet%20%2B%20Esri-emerald)](https://leafletjs.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+🔗 **Direct Live Link**: **[https://ecopulse-7w2c.onrender.com](https://ecopulse-7w2c.onrender.com)**
 
 ---
 
