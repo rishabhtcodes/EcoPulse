@@ -110,30 +110,30 @@
           <p class="text-muted mb-4" style="line-height: 1.6; font-size: 0.95rem;">{{ city.description }}</p>
 
           <!-- Key City Metrics Grid -->
-          <div class="row g-3 text-center mb-4">
-            <div class="col-sm-4">
-              <div class="glass-metric-pill p-3">
+          <div class="row g-2 text-center mb-4">
+            <div class="col-4">
+              <div class="glass-metric-pill p-2 p-md-3">
                 <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.68rem;">Air Status</div>
                 <div class="fw-bold fs-4 mt-1" style="color: {{ latest_aq.get_risk_color }};">{{ latest_aq.aqi }} <span class="fs-6 fw-normal text-muted">AQI</span></div>
-                <span class="badge mt-1" style="background: {{ latest_aq.get_risk_color }}22; color: {{ latest_aq.get_risk_color }}; border: 1px solid {{ latest_aq.get_risk_color }}44;">
+                <span class="badge mt-1" style="background: {{ latest_aq.get_risk_color }}22; color: {{ latest_aq.get_risk_color }}; border: 1px solid {{ latest_aq.get_risk_color }}44; font-size: 0.65rem;">
                   {{ latest_aq.get_risk_level }}
                 </span>
               </div>
             </div>
 
-            <div class="col-sm-4">
-              <div class="glass-metric-pill p-3">
+            <div class="col-4">
+              <div class="glass-metric-pill p-2 p-md-3">
                 <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.68rem;">Eco Score</div>
                 <div class="fw-bold fs-4 text-success mt-1">{{ latest_an.environmental_score }}<span class="fs-6 fw-normal text-muted">/100</span></div>
-                <div class="small text-muted mt-1" style="font-size: 0.72rem;">Primary: <strong>{{ latest_an.dominant_pollutant }}</strong></div>
+                <div class="small text-muted mt-1 text-truncate" style="font-size: 0.68rem;">{{ latest_an.dominant_pollutant }}</div>
               </div>
             </div>
 
-            <div class="col-sm-4">
-              <div class="glass-metric-pill p-3">
+            <div class="col-4">
+              <div class="glass-metric-pill p-2 p-md-3">
                 <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.68rem;">Traffic Density</div>
                 <div class="fw-bold fs-4 text-warning mt-1">{{ latest_aq.traffic_level }}</div>
-                <div class="small text-muted mt-1" style="font-size: 0.72rem;">Urban Corridor</div>
+                <div class="small text-muted mt-1" style="font-size: 0.68rem;">Corridor</div>
               </div>
             </div>
           </div>
@@ -167,53 +167,53 @@
   </div>
 
   <!-- Detailed Environmental Matrix -->
-  <div class="row g-3 mb-4">
+  <div class="row g-2 g-sm-3 mb-4">
     <!-- PM2.5 -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">PM2.5</div>
-        <div class="fw-bold fs-4 text-danger">{{ latest_aq.pm25 }}</div>
-        <div class="small text-muted">µg/m³</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">PM2.5</div>
+        <div class="fw-bold fs-4 text-danger my-1">{{ latest_aq.pm25 }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">µg/m³</div>
       </div>
     </div>
     <!-- PM10 -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">PM10</div>
-        <div class="fw-bold fs-4 text-warning">{{ latest_aq.pm10 }}</div>
-        <div class="small text-muted">µg/m³</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">PM10</div>
+        <div class="fw-bold fs-4 text-warning my-1">{{ latest_aq.pm10 }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">µg/m³</div>
       </div>
     </div>
     <!-- NO2 -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">NO₂</div>
-        <div class="fw-bold fs-4">{{ latest_aq.no2 }}</div>
-        <div class="small text-muted">µg/m³</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">NO₂</div>
+        <div class="fw-bold fs-4 my-1">{{ latest_aq.no2 }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">µg/m³</div>
       </div>
     </div>
     <!-- SO2 -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">SO₂</div>
-        <div class="fw-bold fs-4">{{ latest_aq.so2 }}</div>
-        <div class="small text-muted">µg/m³</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">SO₂</div>
+        <div class="fw-bold fs-4 my-1">{{ latest_aq.so2 }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">µg/m³</div>
       </div>
     </div>
     <!-- CO -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">CO</div>
-        <div class="fw-bold fs-4">{{ latest_aq.co }}</div>
-        <div class="small text-muted">mg/m³</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">CO</div>
+        <div class="fw-bold fs-4 my-1">{{ latest_aq.co }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">mg/m³</div>
       </div>
     </div>
     <!-- O3 -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">Ozone (O₃)</div>
-        <div class="fw-bold fs-4">{{ latest_aq.o3 }}</div>
-        <div class="small text-muted">µg/m³</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Ozone (O₃)</div>
+        <div class="fw-bold fs-4 my-1">{{ latest_aq.o3 }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">µg/m³</div>
       </div>
     </div>
   </div>

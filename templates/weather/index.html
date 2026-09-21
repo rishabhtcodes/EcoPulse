@@ -28,53 +28,53 @@
   </div>
 
   <!-- City Weather Metric Cards -->
-  <div class="row g-3 mb-4">
+  <div class="row g-2 g-sm-3 mb-4">
     <!-- Temperature -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">Temperature</div>
-        <div class="fw-bold fs-3 text-info">{{ latest_wt.temperature }}°C</div>
-        <div class="small text-muted">{{ latest_wt.condition }}</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Temp</div>
+        <div class="fw-bold fs-4 text-info my-1">{{ latest_wt.temperature }}°C</div>
+        <div class="small text-muted text-truncate" style="font-size: 0.68rem;">{{ latest_wt.condition }}</div>
       </div>
     </div>
     <!-- Humidity -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">Humidity</div>
-        <div class="fw-bold fs-3 text-primary">{{ latest_wt.humidity }}%</div>
-        <div class="small text-muted">Relative</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Humidity</div>
+        <div class="fw-bold fs-4 text-primary my-1">{{ latest_wt.humidity }}%</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">Relative</div>
       </div>
     </div>
     <!-- Wind Speed -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">Wind Speed</div>
-        <div class="fw-bold fs-3 text-secondary">{{ latest_wt.wind_speed }}</div>
-        <div class="small text-muted">km/h</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Wind</div>
+        <div class="fw-bold fs-4 text-secondary my-1">{{ latest_wt.wind_speed }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">km/h</div>
       </div>
     </div>
     <!-- Rainfall -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">Precipitation</div>
-        <div class="fw-bold fs-3 text-success">{{ latest_wt.rainfall }}</div>
-        <div class="small text-muted">mm</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Rain</div>
+        <div class="fw-bold fs-4 text-success my-1">{{ latest_wt.rainfall }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">mm</div>
       </div>
     </div>
     <!-- Pressure -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3">
-        <div class="small text-muted">Barometer</div>
-        <div class="fw-bold fs-3 text-warning">{{ latest_wt.pressure }}</div>
-        <div class="small text-muted">hPa</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Barometer</div>
+        <div class="fw-bold fs-4 text-warning my-1">{{ latest_wt.pressure }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">hPa</div>
       </div>
     </div>
     <!-- Comfort Index -->
-    <div class="col-md-2 col-sm-4 col-6">
-      <div class="eco-card text-center p-3 border-success">
-        <div class="small text-muted">Comfort Index</div>
-        <div class="fw-bold fs-3 text-success">{{ latest_wt.get_comfort_index }}</div>
-        <div class="small text-muted">out of 100</div>
+    <div class="col-4 col-md-2">
+      <div class="eco-card text-center p-2 p-sm-3 h-100 border-success">
+        <div class="small text-muted text-truncate" style="font-size: 0.72rem;">Comfort</div>
+        <div class="fw-bold fs-4 text-success my-1">{{ latest_wt.get_comfort_index }}</div>
+        <div class="small text-muted" style="font-size: 0.68rem;">/100</div>
       </div>
     </div>
   </div>

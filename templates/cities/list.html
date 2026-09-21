@@ -26,13 +26,13 @@
       <!-- Filter Form -->
       <div class="col-lg-7">
         <form method="GET" action="{% url 'cities:list' %}" class="row g-2 align-items-center justify-content-lg-end">
-          <div class="col-sm-4">
+          <div class="col-12 col-sm-4">
             <div class="input-group input-group-sm">
               <span class="input-group-text bg-body-tertiary border-end-0"><i class="fas fa-search text-muted small"></i></span>
               <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search city or state..." value="{{ query }}">
             </div>
           </div>
-          <div class="col-sm-3">
+          <div class="col-6 col-sm-3">
             <select name="state" class="form-select form-select-sm">
               <option value="">All States</option>
               {% for s in all_states %}
@@ -40,7 +40,7 @@
               {% endfor %}
             </select>
           </div>
-          <div class="col-sm-3">
+          <div class="col-6 col-sm-3">
             <select name="sort" class="form-select form-select-sm">
               <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Sort by Name</option>
               <option value="aqi_desc" {% if sort_by == 'aqi_desc' %}selected{% endif %}>Highest AQI</option>
@@ -48,7 +48,7 @@
               <option value="score" {% if sort_by == 'score' %}selected{% endif %}>Highest Eco Score</option>
             </select>
           </div>
-          <div class="col-sm-2 d-grid">
+          <div class="col-12 col-sm-2 d-grid">
             <button type="submit" class="btn btn-sm btn-ep-primary">Filter</button>
           </div>
         </form>
