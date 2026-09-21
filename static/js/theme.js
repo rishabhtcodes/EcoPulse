@@ -16,13 +16,10 @@
   const setTheme = function (theme) {
     document.documentElement.setAttribute('data-bs-theme', theme);
     const icon = document.getElementById('theme-icon');
-    if (icon) {
-      if (theme === 'dark') {
-        icon.className = 'fas fa-sun text-warning';
-      } else {
-        icon.className = 'fas fa-moon text-secondary';
-      }
-    }
+    const mobileIcon = document.getElementById('mobile-theme-icon');
+    const iconClass = theme === 'dark' ? 'fas fa-sun text-warning' : 'fas fa-moon text-secondary';
+    if (icon) icon.className = iconClass;
+    if (mobileIcon) mobileIcon.className = iconClass;
   };
 
   // Initial load
@@ -30,17 +27,18 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     setTheme(getPreferredTheme());
+    const toggleTheme = () => {
+      const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setStoredTheme(newTheme);
+      setTheme(newTheme);
+      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+    };
+
     const toggleBtn = document.getElementById('theme-toggle-btn');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        setStoredTheme(newTheme);
-        setTheme(newTheme);
-        
-        // Dispatch event for charts to re-render colors if needed
-        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
-      });
-    }
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleTheme);
+
+    const mobileToggleBtn = document.getElementById('mobile-theme-toggle-btn');
+    if (mobileToggleBtn) mobileToggleBtn.addEventListener('click', toggleTheme);
   });
 })();
