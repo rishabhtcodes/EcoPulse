@@ -390,11 +390,22 @@ class Command(BaseCommand):
                         recommendation=rec_text
                     )
 
-        # Ensure demo and admin accounts exist
-        admin_user, created_admin = User.objects.get_or_create(username='admin', defaults={'email': 'admin@ecopulse.in', 'is_staff': True, 'is_superuser': True})
-        if created_admin:
-            admin_user.set_password('admin123')
+        # Ensure main superadmin and demo user exist
+        admin_email = 'rishabhtiwari3538@gmail.com'
+        admin_user = User.objects.filter(is_superuser=True).first()
+        if admin_user:
+            admin_user.username = admin_email
+            admin_user.email = admin_email
+            admin_user.set_password('Satyam@098')
+            admin_user.is_staff = True
+            admin_user.is_superuser = True
             admin_user.save()
+        else:
+            admin_user = User.objects.create_superuser(
+                username=admin_email,
+                email=admin_email,
+                password='Satyam@098'
+            )
 
         student_user, created_student = User.objects.get_or_create(username='student', defaults={'email': 'student@ecopulse.in'})
         if created_student:
