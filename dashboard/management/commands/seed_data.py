@@ -1,3 +1,4 @@
+import os
 import random
 from datetime import date, timedelta
 from django.core.management.base import BaseCommand
