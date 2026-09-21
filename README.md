@@ -117,8 +117,8 @@ python manage.py migrate
 python manage.py seed_data
 ```
 *Populates 12 Indian cities (Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad, Pune, Ahmedabad, Jaipur, Chandigarh, Lucknow, Shimla) with 14 days of historical air quality and weather telemetry (180+ records each).*
-- **Main Super Admin account**: `rishabhtiwari3538@gmail.com` / `Satyam@098`
-- **Standard User account**: `student` / `student123`
+- **Administrator Account**: Configured securely via `SUPERADMIN_EMAIL` and `SUPERADMIN_PASSWORD` in your private `.env` file.
+- **Sample User Account**: `student` / `student123` (Read-only environmental telemetry monitoring)
 
 ### Run Development Server
 ```bash
