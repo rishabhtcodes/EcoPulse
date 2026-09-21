@@ -1,5 +1,8 @@
 import json
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+from django.utils.text import slugify
 from django.db.models import Q
 from .models import City
 from accounts.models import FavoriteCity
@@ -115,3 +118,65 @@ def city_detail(request, slug):
         'recent_records': city.air_quality_records.order_by('-recorded_date')[:7]
     }
     return render(request, 'cities/detail.html', context)
+
+@user_passes_test(lambda u: u.is_authenticated and u.is_staff, login_url='accounts:login')
+def city_add(request):
+    """Admin-only view to add an Indian city to the environmental monitoring system."""
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        state = request.POST.get('state', '').strip()
+        latitude = request.POST.get('latitude', '').strip()
+        longitude = request.POST.get('longitude', '').strip()
+        population = request.POST.get('population', '').strip() or '1000000'
+        description = request.POST.get('description', '').strip()
+        is_metro = request.POST.get('is_metro') == 'on'
+
+        if not name or not state or not latitude or not longitude:
+            messages.error(request, 'Please provide City Name, State, Latitude, and Longitude.')
+            return render(request, 'cities/add.html')
+
+        try:
+            lat_f = float(latitude)
+            lng_f = float(longitude)
+            pop_i = int(population)
+        except ValueError:
+            messages.error(request, 'Latitude, Longitude, and Population must be valid numbers.')
+            return render(request, 'cities/add.html')
+
+        if City.objects.filter(name__iexact=name).exists():
+            messages.error(request, f'City "{name}" already exists in the system.')
+            return render(request, 'cities/add.html')
+
+        city = City.objects.create(
+            name=name,
+            slug=slugify(name),
+            state=state,
+            latitude=lat_f,
+            longitude=lng_f,
+            population=pop_i,
+            description=description or f"Rapidly growing urban center in {state}, actively monitored for air quality and heat index.",
+            is_metro=is_metro
+        )
+
+        # Trigger initial real-time telemetry sync from Open-Meteo
+        try:
+            sync_city_realtime_data(city)
+            messages.success(request, f'Successfully registered {city.name}! Live satellite & air telemetry synced.')
+        except Exception as e:
+            messages.success(request, f'Registered {city.name}. Telemetry will update on next automated cycle.')
+
+        return redirect('cities:detail', slug=city.slug)
+
+    return render(request, 'cities/add.html')
+
+@user_passes_test(lambda u: u.is_authenticated and u.is_staff, login_url='accounts:login')
+def city_delete(request, slug):
+    """Admin-only view to remove a city from the monitoring system."""
+    city = get_object_or_404(City, slug=slug)
+    if request.method == 'POST':
+        city_name = city.name
+        city.delete()
+        messages.success(request, f'City "{city_name}" has been permanently removed by admin.')
+        return redirect('cities:list')
+    return render(request, 'cities/delete_confirm.html', {'city': city})
+

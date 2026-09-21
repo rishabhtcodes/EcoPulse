@@ -57,6 +57,12 @@
         </a>
 
         <div class="mt-auto d-flex flex-column gap-2">
+          <!-- Admin Add City Quick Access -->
+          {% if user.is_staff %}
+            <a href="{% url 'cities:add' %}" class="rail-icon-btn {% if request.resolver_match.app_name == 'cities' and request.resolver_match.url_name == 'add' %}active{% endif %}" title="Add Monitored City (Admin)">
+              <i class="fas fa-plus-circle text-success"></i>
+            </a>
+          {% endif %}
           <!-- Theme Toggle Button -->
           <button id="theme-toggle-btn" class="rail-icon-btn border-0 bg-transparent" type="button" title="Toggle Light / Dark Mode">
             <i id="theme-icon" class="fas fa-moon"></i>
@@ -200,6 +206,36 @@
 
     </div>
   </div>
+
+  <!-- Mobile Bottom Navigation Bar (Visible only on <= 768px screens) -->
+  <nav class="mobile-bottom-nav d-md-none" aria-label="Mobile Navigation">
+    <a href="{% url 'dashboard:index' %}" class="mobile-nav-item {% if request.resolver_match.app_name == 'dashboard' and request.resolver_match.url_name == 'index' %}active{% endif %}">
+      <i class="fas fa-map"></i>
+      <span>Map</span>
+    </a>
+    <a href="{% url 'cities:list' %}" class="mobile-nav-item {% if request.resolver_match.app_name == 'cities' and request.resolver_match.url_name != 'add' %}active{% endif %}">
+      <i class="fas fa-city"></i>
+      <span>Cities</span>
+    </a>
+    <a href="{% url 'dashboard:compare' %}" class="mobile-nav-item {% if request.resolver_match.app_name == 'dashboard' and request.resolver_match.url_name == 'compare' %}active{% endif %}">
+      <i class="fas fa-scale-balanced"></i>
+      <span>Compare</span>
+    </a>
+    <a href="{% url 'pollution:analytics' %}" class="mobile-nav-item {% if request.resolver_match.app_name == 'pollution' %}active{% endif %}">
+      <i class="fas fa-smog"></i>
+      <span>Pollution</span>
+    </a>
+    <a href="{% url 'weather:index' %}" class="mobile-nav-item {% if request.resolver_match.app_name == 'weather' %}active{% endif %}">
+      <i class="fas fa-cloud-sun"></i>
+      <span>Weather</span>
+    </a>
+    {% if user.is_staff %}
+      <a href="{% url 'cities:add' %}" class="mobile-nav-item {% if request.resolver_match.app_name == 'cities' and request.resolver_match.url_name == 'add' %}active{% endif %} text-success">
+        <i class="fas fa-plus-circle"></i>
+        <span>Admin</span>
+      </a>
+    {% endif %}
+  </nav>
 
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

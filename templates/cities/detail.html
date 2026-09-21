@@ -93,11 +93,18 @@
               <div class="text-muted small"><i class="fas fa-location-dot text-danger me-1"></i> {{ city.state }}, India</div>
             </div>
 
-            {% if user.is_authenticated %}
-              <button class="btn btn-sm favorite-btn-ajax p-2 rounded-circle" data-city-id="{{ city.id }}" title="Toggle Favorite">
-                <i class="{% if is_favorited %}fas fa-heart text-danger{% else %}far fa-heart text-muted{% endif %} fs-5"></i>
-              </button>
-            {% endif %}
+            <div class="d-flex align-items-center gap-2">
+              {% if user.is_staff %}
+                <a href="{% url 'cities:delete' city.slug %}" class="btn btn-sm btn-outline-danger py-1 px-3 d-inline-flex align-items-center gap-1 shadow-sm" title="Admin Remove City">
+                  <i class="fas fa-trash-alt"></i> Delete City
+                </a>
+              {% endif %}
+              {% if user.is_authenticated %}
+                <button class="btn btn-sm favorite-btn-ajax p-2 rounded-circle" data-city-id="{{ city.id }}" title="Toggle Favorite">
+                  <i class="{% if is_favorited %}fas fa-heart text-danger{% else %}far fa-heart text-muted{% endif %} fs-5"></i>
+                </button>
+              {% endif %}
+            </div>
           </div>
 
           <p class="text-muted mb-4" style="line-height: 1.6; font-size: 0.95rem;">{{ city.description }}</p>
